@@ -8,9 +8,9 @@ You are tasked to develop De La Salle Usap (DLSU), a one-on-one chat application
 * The client-side  of  the application  must  be  implemented  using  a  Graphical  User  Interface (GUI). The design is up to the developers as long as the requirements for this project are met.
 * Threading should be implemented as well. This ensures that the server will continuously run and listen while the clients are connected. Closing the server will only be done when at least one of the clients terminate the connection on their end.
 * The following features must be supported:
-** Sending of messages
-** Receiving of messageoSending of text and/or image files
-** Receiving of text and/or image files
+  * Sending of messages
+  * Receiving of messageoSending of text and/or image files
+  * Receiving of text and/or image files
 ### Server
 * For clients to use the application, they must connect first to the messaging server. 
 * The server should use TCP as its transport layer protocol.
@@ -18,10 +18,10 @@ You are tasked to develop De La Salle Usap (DLSU), a one-on-one chat application
 * The server should support two (2) clients.
 * The activities of the clients must be logged in the server. 
 * The logs must have the following information
-** Timestamp
-** Source
-** Destination
-** Activity
+  * Timestamp
+  * Source
+  * Destination
+  * Activity
 * There  should  be an  option  to  save  the  logs  to  a  text  file  after  the  clients  logged out/disconnected from the server.
 * Activities include: Client logging and out, sending and receiving messages, and sending and receiving files.
 ### Client
