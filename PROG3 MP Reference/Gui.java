@@ -30,54 +30,54 @@ public class Gui {
 	private JFrame loadFrame;
 	private JTextField loadAnswer;
 	private JTextField answer;
-	
-	public Gui(){
-	frame = new JFrame();
-	
-	frame.setVisible(true);
-	frame.setLayout(new FlowLayout(FlowLayout.LEFT));
-	frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-	
-	panel = new JPanel();
-	panel2 = new JPanel();
-	panel3 = new JPanel();
-	panel4 = new JPanel();
-	answer = new JTextField(2);
-	submit = new JButton("Submit");
-	
-	panel.setLayout(new FlowLayout(FlowLayout.CENTER));
-	panel2.setLayout(new FlowLayout(FlowLayout.CENTER));
-	panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
-	panel4.setLayout(new FlowLayout(FlowLayout.CENTER));
-	
-	label = new JLabel("<html><center>Welcome to Johnny Moves!<br></br>"
-			+ "<br>Johnny Moves is a courier company, whose innovation is to allow self-check<br/>"
-			+ "<br>out of parcels for delivery to their partner sites or branches!<br/>"
-			+ "<br>Do you want to proceed?</br></center></html>",SwingConstants.CENTER);
-	label2 = new JLabel("Would you like to load a saved progress? ([1] Yes [2] No): ");
-	yesBtn = new JButton("Yes");
-	noBtn = new JButton("No");
-	yesBtn.setVisible(true);
-	panel4.add(label2);
-	panel4.add(answer);
-	panel4.add(submit);
-	panel.add(yesBtn);
-	panel.add(noBtn);
-	panel2.add(label);
-	
-	panel3.add(panel2);
-	panel3.add(panel);
-	panel3.add(panel4);
-	
-	panel4.setVisible(false);
-	frame.add(panel3);
-	
-	frame.setSize(500,500);
-	frame.pack();
+
+	public Gui() {
+		frame = new JFrame();
+
+		frame.setVisible(true);
+		frame.setLayout(new FlowLayout(FlowLayout.LEFT));
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+		panel = new JPanel();
+		panel2 = new JPanel();
+		panel3 = new JPanel();
+		panel4 = new JPanel();
+		answer = new JTextField(2);
+		submit = new JButton("Submit");
+
+		panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+		panel2.setLayout(new FlowLayout(FlowLayout.CENTER));
+		panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
+		panel4.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+		label = new JLabel("<html><center>Welcome to Johnny Moves!<br></br>"
+				+ "<br>Johnny Moves is a courier company, whose innovation is to allow self-check<br/>"
+				+ "<br>out of parcels for delivery to their partner sites or branches!<br/>"
+				+ "<br>Do you want to proceed?</br></center></html>", SwingConstants.CENTER);
+		label2 = new JLabel("Would you like to load a saved progress? ([1] Yes [2] No): ");
+		yesBtn = new JButton("Yes");
+		noBtn = new JButton("No");
+		yesBtn.setVisible(true);
+		panel4.add(label2);
+		panel4.add(answer);
+		panel4.add(submit);
+		panel.add(yesBtn);
+		panel.add(noBtn);
+		panel2.add(label);
+
+		panel3.add(panel2);
+		panel3.add(panel);
+		panel3.add(panel4);
+
+		panel4.setVisible(false);
+		frame.add(panel3);
+
+		frame.setSize(500, 500);
+		frame.pack();
 	}
 
 	/** Frame for loading of save file */
-	void loadFrameView(){
+	void loadFrameView() {
 		frame.setVisible(false);
 		loadFrame = new JFrame();
 		loadFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -113,18 +113,18 @@ public class Gui {
 	}
 
 	/** Setter for load summary */
-	void setLoadLabel(String message){
+	void setLoadLabel(String message) {
 		loadSummaryLabel.setText(message);
 	}
 
 	/** To show summary panel */
-	void showLoadSummary(){
+	void showLoadSummary() {
 		loadSummaryPanel.setVisible(true);
 		loadButtonPanel.setVisible(true);
 	}
 
 	/** Actions when proceed button is clicked */
-	void proceedButton(){
+	void proceedButton() {
 		loadAnswer.setText("");
 		loadFrame.setVisible(false);
 
@@ -134,25 +134,25 @@ public class Gui {
 	}
 
 	/** Getter for answer in load panel */
-	String getLoadAnswer(){
+	String getLoadAnswer() {
 		return loadAnswer.getText();
 	}
 
 	/** Getter for load frame */
-	JFrame getLoadFrame(){
+	JFrame getLoadFrame() {
 		return loadFrame;
 	}
-	
+
 	/** Listener for yes button */
 	void addyesBtnListener(ActionListener yes) {
 		yesBtn.addActionListener(yes);
 	}
-	
+
 	/** Listener for submit button */
 	void answerListener(ActionListener sub) {
 		submit.addActionListener(sub);
 	}
-	
+
 	/** Listener for no button */
 	void addcloseListener(ActionListener sub) {
 		noBtn.addActionListener(sub);
@@ -177,19 +177,19 @@ public class Gui {
 	void closeFrame() {
 		frame.setVisible(false);
 	}
-	
+
 	/** Getter for user input about load */
 	String getAnswer() {
 		return answer.getText();
 	}
 
 	/** Getter for welcome frame */
-	JFrame getFrame(){
+	JFrame getFrame() {
 		return frame;
 	}
 
 	/** For dialog box */
-	void showMessage(String message){
+	void showMessage(String message) {
 		JOptionPane.showMessageDialog(null, message);
 	}
 }
