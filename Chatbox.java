@@ -10,39 +10,39 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 public class Chatbox extends JPanel {
-    private JButton jcomp1; // Attach File Button
-    private JTextArea jcomp2; // Input Message textbox
-    private JButton jcomp3; // Logout Button
-    private JButton jcomp4; // Send Message Button
-    private JLabel jcomp5; // "You are now connected!" Label
-    private JTextArea jcomp6; // Chat log textbox
+    private JButton chatbox_file_button; // Attach File Button
+    private JTextArea chatbox_input_textarea; // Input Message textbox
+    private JButton chatbox_logout_button; // Logout Button
+    private JButton chatbox_send_message_button; // Send Message Button
+    private JLabel chatbox_connected_label; // "You are now connected!" Label
+    private JTextArea chatbox_chatlog_textarea; // Chat log textbox
     private JScrollPane vertical_message;
     private JScrollPane vertical_body;
 
     public Chatbox() {
         // construct components
-        jcomp1 = new JButton("Attach File");
+        chatbox_file_button = new JButton("Send File");
 
-        jcomp2 = new JTextArea(5, 5);
-        jcomp2.setLineWrap(true);
-        jcomp2.setEditable(true);
-        jcomp2.setVisible(true);
+        chatbox_input_textarea = new JTextArea(5, 5);
+        chatbox_input_textarea.setLineWrap(true);
+        chatbox_input_textarea.setEditable(true);
+        chatbox_input_textarea.setVisible(true);
 
-        jcomp3 = new JButton("Logout");
+        chatbox_logout_button = new JButton("Logout");
 
-        jcomp4 = new JButton("Send");
+        chatbox_send_message_button = new JButton("Send Message");
 
-        jcomp5 = new JLabel("You are now connected!");
+        chatbox_connected_label = new JLabel("You are now connected!");
 
-        jcomp6 = new JTextArea(5, 5);
-        jcomp6.setLineWrap(true);
-        jcomp6.setEditable(false);
-        jcomp6.setVisible(true);
+        chatbox_chatlog_textarea = new JTextArea(5, 5);
+        chatbox_chatlog_textarea.setLineWrap(true);
+        chatbox_chatlog_textarea.setEditable(false);
+        chatbox_chatlog_textarea.setVisible(true);
 
         // add vertical scrollbar
-        vertical_message = new JScrollPane(jcomp2);
+        vertical_message = new JScrollPane(chatbox_input_textarea);
         vertical_message.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        vertical_body = new JScrollPane(jcomp6);
+        vertical_body = new JScrollPane(chatbox_chatlog_textarea);
         vertical_body.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         // adjust size and set layout
@@ -50,20 +50,20 @@ public class Chatbox extends JPanel {
         setLayout(null);
 
         // add components
-        add(jcomp1);
-        add(vertical_message); // add(jcomp2);
-        add(jcomp3);
-        add(jcomp4);
-        add(jcomp5);
-        add(vertical_body); // add(jcomp6);
+        add(chatbox_file_button);
+        add(vertical_message); // add(chatbox_input_textarea);
+        add(chatbox_logout_button);
+        add(chatbox_send_message_button);
+        add(chatbox_connected_label);
+        add(vertical_body); // add(chatbox_chatlog_textarea);
 
         // set component bounds (only needed by Absolute Positioning)
-        jcomp1.setBounds(465, 275, 115, 30);
-        vertical_message.setBounds(30, 278, 425, 54); // jcomp2
-        jcomp3.setBounds(465, 20, 115, 26);
-        jcomp4.setBounds(465, 305, 115, 30);
-        jcomp5.setBounds(30, 19, 155, 25);
-        vertical_body.setBounds(27, 54, 550, 215); // jcomp6
+        chatbox_file_button.setBounds(465, 275, 115, 30);
+        vertical_message.setBounds(30, 278, 425, 54); // chatbox_input_textarea
+        chatbox_logout_button.setBounds(465, 20, 115, 26);
+        chatbox_send_message_button.setBounds(465, 305, 115, 30);
+        chatbox_connected_label.setBounds(30, 19, 155, 25);
+        vertical_body.setBounds(27, 54, 550, 215); // chatbox_chatlog_textarea
     }
 
     public static void main(String[] args) {
