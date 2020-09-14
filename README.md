@@ -9,7 +9,8 @@ You are tasked to develop De La Salle Usap (DLSU), a one-on-one chat application
 * Threading should be implemented as well. This ensures that the server will continuously run and listen while the clients are connected. Closing the server will only be done when at least one of the clients terminate the connection on their end.
 * The following features must be supported:
   * Sending of messages
-  * Receiving of messageoSending of text and/or image files
+  * Receiving of message
+  * Sending of text and/or image files
   * Receiving of text and/or image files
 ### Server
 * For clients to use the application, they must connect first to the messaging server. 
