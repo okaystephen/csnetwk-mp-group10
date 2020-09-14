@@ -11,38 +11,40 @@ import javax.swing.event.*;
 import javax.swing.text.html.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 public class ClientGUI extends Thread {
-    private JFrame frame;
-    private JPanel panel;
+    private final JFrame frame;
+    private final JPanel panel;
 
-    private JButton client_logout_button;
-    private JTextPane client_active;
-    private JLabel client_active_label;
-    private JTextPane client_chatlog;
-    private JTextField client_name_field;
-    private JLabel client_name_label;
-    private JTextField client_ip_field;
-    private JLabel client_ip_label;
-    private JTextField client_port_field;
-    private JLabel client_port_label;
-    private JButton client_proceed_button;
-    private JScrollPane vertical_log;
-    private JScrollPane vertical_user;
-    private JScrollPane vertical_message;
+    private final JButton client_logout_button;
+    private final JTextPane client_active;
+    private final JLabel client_active_label;
+    private final JTextPane client_chatlog;
+    private final JTextField client_name_field;
+    private final JLabel client_name_label;
+    private final JTextField client_ip_field;
+    private final JLabel client_ip_label;
+    private final JTextField client_port_field;
+    private final JLabel client_port_label;
+    private final JButton client_proceed_button;
+    private final JScrollPane vertical_log;
+    private final JScrollPane vertical_user;
+    private final JScrollPane vertical_message;
 
-    private JButton client_file_button;
-    private JButton client_message_button;
-    private JTextArea client_message_field;
+    private final JButton client_file_button;
+    private final JButton client_message_button;
+    private final JTextArea client_message_field;
 
     // For server connection
     private String username;
-    private String server;
-    private String port;
+    private String servername;
     private int PORT;
     private Thread thread;
     BufferedReader input;
     PrintWriter output;
+    Socket server;
 
     public ClientGUI() {
         frame = new JFrame("De La Salle Usap");
@@ -103,7 +105,7 @@ public class ClientGUI extends Thread {
         vertical_message.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         // add components
-        panel.add(client_logout_button);
+        // panel.add(client_logout_button);
         panel.add(vertical_user);
         panel.add(client_active_label);
         panel.add(vertical_log);
@@ -115,9 +117,9 @@ public class ClientGUI extends Thread {
         panel.add(client_port_label);
         panel.add(client_proceed_button);
 
-        panel.add(client_file_button);
-        panel.add(client_message_button);
-        panel.add(vertical_message);
+        // panel.add(client_file_button);
+        // panel.add(client_message_button);
+        // panel.add(vertical_message);
 
         // set component bounds (only needed by Absolute Positioning)
         client_logout_button.setBounds(480, 20, 100, 25);
@@ -136,11 +138,6 @@ public class ClientGUI extends Thread {
         client_message_button.setBounds(457, 318, 125, 25);
         vertical_message.setBounds(25, 263, 550, 51);
 
-        client_logout_button.setVisible(false);
-        client_file_button.setVisible(false);
-        client_message_button.setVisible(false);
-        vertical_message.setVisible(false);
-
         frame.getContentPane().add(panel);
         frame.pack();
         frame.setResizable(false);
@@ -148,29 +145,37 @@ public class ClientGUI extends Thread {
 
         // On connect
         client_proceed_button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(final ActionEvent ae) {
                 try {
+                    String portnumber = client_port_field.getText();
                     username = client_name_field.getText();
-                    // String port = jtfport.getText();
-                    port = client_port_field.getText();
-                    server = client_ip_field.getText();
-                    // PORT = Integer.parseInt(port);
+                    // port = client_port_field.getText();
+                    servername = client_ip_field.getText();
+                    PORT = Integer.parseInt(portnumber);
+
+                    // clear textfield
+                    client_name_field.setText("");
+                    client_port_field.setText("");
+                    client_ip_field.setText("");
 
                     // appendPane(client_chatlog,
                     // "<span>Successfully connected to " + server.getRemoteSocketAddress() +
                     // "</span>");
-                    appendPane(client_chatlog, "<br><span>You may start chatting now!</span><br><br>");
+                    // server = new Socket(servername, PORT);
 
-                    // input = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                    // output = new PrintWriter(server.getOutputStream(), true);
+                    appendPane(client_chatlog,
+                            "<br><span>Hey <b>" + username + "</b>! you may start chatting now.</span><br><br>");
+
+                    input = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                    output = new PrintWriter(server.getOutputStream(), true);
 
                     // send nickname to server
                     output.println(username);
 
                     // create new Read Thread
-                    // thread = new Read();
-                    // thread.start();
-                    client_logout_button.setVisible(true);
+                    thread = new Read();
+                    thread.start();
+
                     panel.remove(client_name_field);
                     panel.remove(client_port_field);
                     panel.remove(client_ip_field);
@@ -179,10 +184,6 @@ public class ClientGUI extends Thread {
                     panel.remove(client_ip_label);
                     panel.remove(client_proceed_button);
 
-                    client_logout_button.setVisible(true);
-                    client_file_button.setVisible(true);
-                    client_message_button.setVisible(true);
-                    vertical_message.setVisible(true);
                     panel.add(client_logout_button);
                     panel.add(client_file_button);
                     panel.add(client_message_button);
@@ -191,8 +192,53 @@ public class ClientGUI extends Thread {
                     panel.revalidate();
                     panel.repaint();
 
-                } catch (Exception e) {
-                    appendPane(client_chatlog, "<span>Could not connect to Server</span>");
+                } catch (final Exception e) {
+                    appendPane(client_chatlog, "<br><span>Couldn't connect to the server! :(</span><br>");
+                    JOptionPane.showMessageDialog(panel, e.getMessage());
+                }
+            }
+
+        });
+
+        // Logout button
+        client_logout_button.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent ae) {
+                try {
+
+                    // appendPane(client_chatlog,
+                    // "<span>Successfully connected to " + server.getRemoteSocketAddress() +
+                    // "</span>");
+                    // server = new Socket(servername, PORT);
+
+                    client_chatlog.setText("");
+
+                    appendPane(client_chatlog, "<br><span>You have logged out!</span><br>");
+
+                    appendPane(client_chatlog, "<h3>Welcome to De La Salle Usap!</h3>" + "<br>"
+                            + "Enter your name, IP Address, and Port Number" + "<br>" + "to get started!");
+
+                    // stop thread
+                    thread.interrupt();
+                    output.close();
+
+                    panel.remove(client_logout_button);
+                    panel.remove(client_file_button);
+                    panel.remove(client_message_button);
+                    panel.remove(vertical_message);
+
+                    panel.add(client_name_field);
+                    panel.add(client_port_field);
+                    panel.add(client_ip_field);
+                    panel.add(client_name_label);
+                    panel.add(client_port_label);
+                    panel.add(client_ip_label);
+                    panel.add(client_proceed_button);
+
+                    panel.revalidate();
+                    panel.repaint();
+
+                } catch (final Exception e) {
+                    appendPane(client_chatlog, "<span>Couldn't log-out! :(</span>");
                     JOptionPane.showMessageDialog(panel, e.getMessage());
                 }
             }
@@ -200,18 +246,43 @@ public class ClientGUI extends Thread {
         });
     }
 
-    private void appendPane(JTextPane pane, String message) {
-        HTMLDocument doc = (HTMLDocument) pane.getDocument();
-        HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
+    class Read extends Thread {
+        public void run() {
+            String message;
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    message = input.readLine();
+                    if (message != null) {
+                        if (message.charAt(0) == '[') {
+                            message = message.substring(1, message.length() - 1);
+                            ArrayList<String> userArray = new ArrayList<String>(Arrays.asList(message.split(", ")));
+                            client_active.setText(null);
+                            for (String user : userArray) {
+                                appendPane(client_active, "@" + user);
+                            }
+                        } else {
+                            appendPane(client_chatlog, message);
+                        }
+                    }
+                } catch (IOException ex) {
+                    System.err.println("Something went wrong in getting the message!");
+                }
+            }
+        }
+    }
+
+    private void appendPane(final JTextPane pane, final String message) {
+        final HTMLDocument doc = (HTMLDocument) pane.getDocument();
+        final HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
         try {
             editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
             pane.setCaretPosition(doc.getLength());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        ClientGUI client = new ClientGUI();
+    public static void main(final String[] args) throws Exception {
+        final ClientGUI client = new ClientGUI();
     }
 }

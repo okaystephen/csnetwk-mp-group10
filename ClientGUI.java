@@ -37,10 +37,11 @@ public class ClientGUI extends Thread {
 
     // For server connection
     private String username;
-    private String server;
-    private String port;
-    private int PORT;
+    private String servername;
+    private int port;
     private Thread thread;
+    Socket server;
+    String portnumber;
     BufferedReader input;
     PrintWriter output;
 
@@ -151,14 +152,14 @@ public class ClientGUI extends Thread {
             public void actionPerformed(ActionEvent ae) {
                 try {
                     username = client_name_field.getText();
-                    // String port = jtfport.getText();
-                    port = client_port_field.getText();
-                    server = client_ip_field.getText();
-                    // PORT = Integer.parseInt(port);
+                    portnumber = client_port_field.getText();
+                    servername = client_ip_field.getText();
+                    port = Integer.parseInt(portnumber);
 
-                    // appendPane(client_chatlog,
-                    // "<span>Successfully connected to " + server.getRemoteSocketAddress() +
-                    // "</span>");
+                    appendPane(client_chatlog,
+                            "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span>");
+                    server = new Socket(server, port);
+
                     appendPane(client_chatlog, "<br><span>You may start chatting now!</span><br><br>");
 
                     // input = new BufferedReader(new InputStreamReader(server.getInputStream()));
