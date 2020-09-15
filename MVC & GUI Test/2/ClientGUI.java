@@ -177,6 +177,8 @@ public class ClientGUI extends Thread {
                         thread = new Read();
                         thread.start();
 
+                        output.println("<b>has connected.</b>");
+
                         panel.remove(client_name_field);
                         panel.remove(client_port_field);
                         panel.remove(client_ip_field);
@@ -253,6 +255,8 @@ public class ClientGUI extends Thread {
         client_logout_button.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent ae) {
                 try {
+                    output.println("<b>has logged out.</b>");
+
                     // clear textfield
                     client_name_field.setText("");
                     client_port_field.setText("");
@@ -260,14 +264,12 @@ public class ClientGUI extends Thread {
                     client_chatlog.setText("");
                     client_active.setText("");
 
+                    thread.interrupt();
+
                     appendPane(client_chatlog, "<br><span>You have logged out!</span><br>");
 
                     appendPane(client_chatlog, "<h3>Welcome to De La Salle Usap!</h3>" + "<br>"
                             + "Enter your name, IP Address, and Port Number" + "<br>" + "to get started!");
-
-                    // stop thread
-                    thread.interrupt();
-                    output.close();
 
                     panel.remove(client_logout_button);
                     panel.remove(client_file_button);
@@ -285,8 +287,9 @@ public class ClientGUI extends Thread {
                     panel.revalidate();
                     panel.repaint();
 
+                    output.close();
+
                 } catch (final Exception e) {
-                    appendPane(client_chatlog, "<span>Couldn't log-out! :(</span>");
                     JOptionPane.showMessageDialog(panel, e.getMessage());
                 }
             }
@@ -329,7 +332,7 @@ public class ClientGUI extends Thread {
                         }
                     }
                 } catch (IOException ex) {
-                    System.err.println("Something went wrong in getting the message!");
+                    System.err.println(ex.getMessage());
                 }
             }
         }
