@@ -39,6 +39,7 @@ public class ClientGUI extends Thread {
 
     // For server connection
     private String username;
+    private String portnumber;
     private String servername;
     private int PORT;
     private Thread thread;
@@ -150,48 +151,48 @@ public class ClientGUI extends Thread {
         client_proceed_button.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent ae) {
                 try {
-                    String portnumber = client_port_field.getText();
-                    username = client_name_field.getText();
-                    // port = client_port_field.getText();
-                    servername = client_ip_field.getText();
-                    PORT = Integer.parseInt(portnumber);
+                    if (client_name_field.getText().equals("")) {
+                        JOptionPane.showMessageDialog(panel, "Please enter a name!");
+                    } else {
+                        // String portnumber = client_port_field.getText();
+                        username = client_name_field.getText();
+                        portnumber = client_port_field.getText();
+                        servername = client_ip_field.getText();
+                        PORT = Integer.parseInt(portnumber);
 
-                    appendPane(client_chatlog,
-                            "<br><span>Connecting to " + servername + " on port " + PORT + "...</span>");
-                    server = new Socket(servername, PORT);
+                        appendPane(client_chatlog,
+                                "<br><span>Connecting to " + servername + " on port " + PORT + "...</span>");
+                        server = new Socket(servername, PORT);
 
-                    appendPane(client_chatlog,
-                            "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span><br>");
+                        appendPane(client_chatlog,
+                                "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span><br>");
 
-                    // appendPane(client_chatlog,
-                    // "<br><span>Hey <b>" + username + "</b>! you may start chatting
-                    // now.</span><br><br>");
+                        input = new BufferedReader(new InputStreamReader(server.getInputStream()));
+                        output = new PrintWriter(server.getOutputStream(), true);
 
-                    input = new BufferedReader(new InputStreamReader(server.getInputStream()));
-                    output = new PrintWriter(server.getOutputStream(), true);
+                        // send nickname to server
+                        output.println(username);
 
-                    // send nickname to server
-                    output.println(username);
+                        // create new Read Thread
+                        thread = new Read();
+                        thread.start();
 
-                    // create new Read Thread
-                    thread = new Read();
-                    thread.start();
+                        panel.remove(client_name_field);
+                        panel.remove(client_port_field);
+                        panel.remove(client_ip_field);
+                        panel.remove(client_name_label);
+                        panel.remove(client_port_label);
+                        panel.remove(client_ip_label);
+                        panel.remove(client_proceed_button);
 
-                    panel.remove(client_name_field);
-                    panel.remove(client_port_field);
-                    panel.remove(client_ip_field);
-                    panel.remove(client_name_label);
-                    panel.remove(client_port_label);
-                    panel.remove(client_ip_label);
-                    panel.remove(client_proceed_button);
+                        panel.add(client_logout_button);
+                        panel.add(client_file_button);
+                        panel.add(client_message_button);
+                        panel.add(vertical_message);
 
-                    panel.add(client_logout_button);
-                    panel.add(client_file_button);
-                    panel.add(client_message_button);
-                    panel.add(vertical_message);
-
-                    panel.revalidate();
-                    panel.repaint();
+                        panel.revalidate();
+                        panel.repaint();
+                    }
 
                 } catch (final Exception e) {
                     appendPane(client_chatlog, "<br><span>Couldn't connect to the server! :(</span><br>");
@@ -228,6 +229,22 @@ public class ClientGUI extends Thread {
         client_message_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 send();
+            }
+        });
+
+        // Send file button
+        client_file_button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    JFileChooser file = new JFileChooser();
+                    int result = file.showOpenDialog(null);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = file.getSelectedFile();
+                        System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+                    }
+                } catch (final Exception e) {
+                    JOptionPane.showMessageDialog(panel, e.getMessage());
+                }
             }
         });
 
