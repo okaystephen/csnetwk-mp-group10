@@ -61,6 +61,7 @@ public class Server {
   // delete a user from the list
   public void removeUser(User user) {
     this.clients.remove(user);
+    System.out.println("Client " + user + " disconnected...");
   }
 
   // send incoming msg to all Users
