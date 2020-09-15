@@ -125,10 +125,6 @@ class UserHandler implements Runnable {
         }
 
         // Gestion du changement
-      } else if (message.charAt(0) == '#') {
-        user.changeColor(message);
-        // update color for all other users
-        this.server.broadcastAllUsers();
       } else {
         // update user list
         server.broadcastMessages(message, user);
@@ -159,26 +155,6 @@ class User {
     this.userId = nbUser;
     this.color = ColorInt.getColor(this.userId);
     nbUser += 1;
-  }
-
-  // change color user
-  public void changeColor(String hexColor) {
-    // check if it's a valid hexColor
-    Pattern colorPattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})");
-    Matcher m = colorPattern.matcher(hexColor);
-    if (m.matches()) {
-      Color c = Color.decode(hexColor);
-      // if the Color is too Bright don't change
-      double luma = 0.2126 * c.getRed() + 0.7152 * c.getGreen() + 0.0722 * c.getBlue(); // per ITU-R BT.709
-      if (luma > 160) {
-        this.getOutStream().println("<b>Color Too Bright</b>");
-        return;
-      }
-      this.color = hexColor;
-      this.getOutStream().println("<b>Color changed successfully</b> " + this.toString());
-      return;
-    }
-    this.getOutStream().println("<b>Failed to change color</b>");
   }
 
   // getteur

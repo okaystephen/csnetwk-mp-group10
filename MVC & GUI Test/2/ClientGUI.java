@@ -241,6 +241,7 @@ public class ClientGUI extends Thread {
                     if (result == JFileChooser.APPROVE_OPTION) {
                         File selectedFile = file.getSelectedFile();
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+                        output.println("(sent a file: " + selectedFile.getName() + ")");
                     }
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(panel, e.getMessage());
