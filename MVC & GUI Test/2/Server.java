@@ -51,7 +51,8 @@ public class Server {
       this.clients.add(newUser);
 
       // Welcome msg
-      newUser.getOutStream().println("<b>Welcome</b> "+ newUser.toString());
+      newUser.getOutStream()
+          .println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
 
       // create a new thread for newUser incoming messages handling
       new Thread(new UserHandler(this, newUser)).start();
