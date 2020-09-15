@@ -32,10 +32,10 @@ public class ClientGUI extends Thread {
     private final JScrollPane vertical_log;
     private final JScrollPane vertical_user;
     private final JScrollPane vertical_message;
-
     private final JButton client_file_button;
     private final JButton client_message_button;
     private final JTextArea client_message_field;
+    private String msg = "";
 
     // For server connection
     private String username;
@@ -88,6 +88,9 @@ public class ClientGUI extends Thread {
 
         client_chatlog.setContentType("text/html");
         client_chatlog.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+        client_active.setContentType("text/html");
+        client_active.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
         appendPane(client_chatlog, "<br><br>" + "<h3>Welcome to De La Salle Usap!</h3>" + "<br>"
                 + "Enter your name, IP Address, and Port Number" + "<br>" + "to get started!");
@@ -153,17 +156,14 @@ public class ClientGUI extends Thread {
                     servername = client_ip_field.getText();
                     PORT = Integer.parseInt(portnumber);
 
-                    // clear textfield
-                    client_name_field.setText("");
-                    client_port_field.setText("");
-                    client_ip_field.setText("");
-
                     appendPane(client_chatlog, "<span>Connecting to " + servername + " on port " + PORT + "...</span>");
                     server = new Socket(servername, PORT);
 
-                    appendPane(client_chatlog, "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span>");
+                    appendPane(client_chatlog,
+                            "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span>");
 
-                    appendPane(client_chatlog, "<br><span>Hey <b>" + username + "</b>! you may start chatting now.</span><br><br>");
+                    appendPane(client_chatlog,
+                            "<br><span>Hey <b>" + username + "</b>! you may start chatting now.</span><br><br>");
 
                     input = new BufferedReader(new InputStreamReader(server.getInputStream()));
                     output = new PrintWriter(server.getOutputStream(), true);
@@ -199,17 +199,46 @@ public class ClientGUI extends Thread {
 
         });
 
+        // Send message button
+        client_message_field.addKeyListener(new KeyAdapter() {
+            // send message on Enter
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    send();
+                }
+
+                // Get last message typed
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    String currentMessage = client_message_field.getText().trim();
+                    client_message_field.setText(msg);
+                    msg = currentMessage;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    String currentMessage = client_message_field.getText().trim();
+                    client_message_field.setText(msg);
+                    msg = currentMessage;
+                }
+            }
+        });
+
+        // Send message button
+        client_message_button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                send();
+            }
+        });
+
         // Logout button
         client_logout_button.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent ae) {
                 try {
-
-                    // appendPane(client_chatlog,
-                    // "<span>Successfully connected to " + server.getRemoteSocketAddress() +
-                    // "</span>");
-                    // server = new Socket(servername, PORT);
-
+                    // clear textfield
+                    client_name_field.setText("");
+                    client_port_field.setText("");
+                    client_ip_field.setText("");
                     client_chatlog.setText("");
+                    client_active.setText("");
 
                     appendPane(client_chatlog, "<br><span>You have logged out!</span><br>");
 
@@ -245,6 +274,22 @@ public class ClientGUI extends Thread {
         });
     }
 
+    public void send() {
+        try {
+            String message = client_message_field.getText().trim();
+            if (message.equals("")) {
+                return;
+            }
+            this.msg = message;
+            output.println(message);
+            client_message_field.requestFocus();
+            client_message_field.setText(null);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            // System.exit(0);
+        }
+    }
+
     class Read extends Thread {
         public void run() {
             String message;
@@ -257,7 +302,7 @@ public class ClientGUI extends Thread {
                             ArrayList<String> userArray = new ArrayList<String>(Arrays.asList(message.split(", ")));
                             client_active.setText(null);
                             for (String user : userArray) {
-                                appendPane(client_active, "@" + user);
+                                appendPane(client_active, user);
                             }
                         } else {
                             appendPane(client_chatlog, message);
@@ -271,8 +316,8 @@ public class ClientGUI extends Thread {
     }
 
     private void appendPane(final JTextPane pane, final String message) {
-         HTMLDocument doc = (HTMLDocument) pane.getDocument();
-         HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
+        HTMLDocument doc = (HTMLDocument) pane.getDocument();
+        HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
         try {
             editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
             pane.setCaretPosition(doc.getLength());
