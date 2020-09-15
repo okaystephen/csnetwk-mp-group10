@@ -10,6 +10,9 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.awt.Color;
+import java.sql.Timestamp;    
+import java.util.Date;    
+import java.text.SimpleDateFormat;  
 
 public class Server {
 
@@ -32,7 +35,10 @@ public class Server {
         this.close();
       }
     };
-    System.out.println("Port 12345 is now open.");
+    Date date = new Date();  
+    Timestamp ts=new Timestamp(date.getTime());  
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
+    System.out.println(formatter.format(ts) + ": " + "Listening at Port 12345");
 
     while (true) {
       // accepts a new client
@@ -42,7 +48,10 @@ public class Server {
       String nickname = (new Scanner(client.getInputStream())).nextLine();
       nickname = nickname.replace(",", ""); // ',' use for serialisation
       nickname = nickname.replace(" ", "_");
-      System.out.println("New Client: \"" + nickname + "\"\nIP Address: " + client.getInetAddress().getHostAddress());
+      Date clientdate = new Date();  
+      Timestamp clientts=new Timestamp(clientdate.getTime());  
+      SimpleDateFormat clientformatter = new SimpleDateFormat("HH:mm:ss");  
+      System.out.println("\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + "\n\t  IP Address: " + client.getInetAddress().getHostAddress());
 
       // create new User
       User newUser = new User(client, nickname);
@@ -62,14 +71,37 @@ public class Server {
   // delete a user from the list
   public void removeUser(User user) {
     this.clients.remove(user);
-    System.out.println(user.getNickname() + " disconnected...");
+    Date date = new Date();  
+    Timestamp ts=new Timestamp(date.getTime());  
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
+    System.out.println("\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...");
   }
 
   // send incoming msg to all Users
   public void broadcastMessages(String msg, User userSender) {
+    boolean success = false;
+    String receiver = "";
     for (User client : this.clients) {
-      client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
-      System.out.println(userSender.getNickname() + " sent a message");
+      if(this.clients.size() == 2){
+        client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+        success = true;
+        if(client != userSender){
+          receiver = client.getNickname();
+        }
+      }
+      else{
+        userSender.getOutStream().println("Message sending failed... No other client online");
+        Date date = new Date();
+        Timestamp ts=new Timestamp(date.getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        System.out.println("\n" + formatter.format(ts) + ": " + "Message sending failed...");
+      }
+    }
+    if(success){
+      Date date = new Date();  
+      Timestamp ts=new Timestamp(date.getTime());  
+      SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+      System.out.println("\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver);
     }
   }
 
@@ -77,21 +109,6 @@ public class Server {
   public void broadcastAllUsers() {
     for (User client : this.clients) {
       client.getOutStream().println(this.clients);
-    }
-  }
-
-  // send message to a User (String)
-  public void sendMessageToUser(String msg, User userSender, String user) {
-    boolean find = false;
-    for (User client : this.clients) {
-      if (client.getNickname().equals(user) && client != userSender) {
-        find = true;
-        userSender.getOutStream().println(userSender.toString() + " -> " + client.toString() + ": " + msg);
-        client.getOutStream().println("(<b>Private</b>)" + userSender.toString() + "<span>: " + msg + "</span>");
-      }
-    }
-    if (!find) {
-      userSender.getOutStream().println(userSender.toString() + " -> (<b>no one!</b>): " + msg);
     }
   }
 }
@@ -115,39 +132,8 @@ class UserHandler implements Runnable {
     while (sc.hasNextLine()) {
       message = sc.nextLine();
 
-      // smiley
-      message = message.replace(":)",
-          "<img src='http://4.bp.blogspot.com/-ZgtYQpXq0Yo/UZEDl_PJLhI/AAAAAAAADnk/2pgkDG-nlGs/s1600/facebook-smiley-face-for-comments.png'>");
-      message = message.replace(":D",
-          "<img src='http://2.bp.blogspot.com/-OsnLCK0vg6Y/UZD8pZha0NI/AAAAAAAADnY/sViYKsYof-w/s1600/big-smile-emoticon-for-facebook.png'>");
-      message = message.replace(":d",
-          "<img src='http://2.bp.blogspot.com/-OsnLCK0vg6Y/UZD8pZha0NI/AAAAAAAADnY/sViYKsYof-w/s1600/big-smile-emoticon-for-facebook.png'>");
-      message = message.replace(":(",
-          "<img src='http://2.bp.blogspot.com/-rnfZUujszZI/UZEFYJ269-I/AAAAAAAADnw/BbB-v_QWo1w/s1600/facebook-frown-emoticon.png'>");
-      message = message.replace("-_-",
-          "<img src='http://3.bp.blogspot.com/-wn2wPLAukW8/U1vy7Ol5aEI/AAAAAAAAGq0/f7C6-otIDY0/s1600/squinting-emoticon.png'>");
-      message = message.replace(";)",
-          "<img src='http://1.bp.blogspot.com/-lX5leyrnSb4/Tv5TjIVEKfI/AAAAAAAAAi0/GR6QxObL5kM/s400/wink%2Bemoticon.png'>");
-      message = message.replace(":P",
-          "<img src='http://4.bp.blogspot.com/-bTF2qiAqvi0/UZCuIO7xbOI/AAAAAAAADnI/GVx0hhhmM40/s1600/facebook-tongue-out-emoticon.png'>");
-      message = message.replace(":p",
-          "<img src='http://4.bp.blogspot.com/-bTF2qiAqvi0/UZCuIO7xbOI/AAAAAAAADnI/GVx0hhhmM40/s1600/facebook-tongue-out-emoticon.png'>");
-      message = message.replace(":o",
-          "<img src='http://1.bp.blogspot.com/-MB8OSM9zcmM/TvitChHcRRI/AAAAAAAAAiE/kdA6RbnbzFU/s400/surprised%2Bemoticon.png'>");
-      message = message.replace(":O",
-          "<img src='http://1.bp.blogspot.com/-MB8OSM9zcmM/TvitChHcRRI/AAAAAAAAAiE/kdA6RbnbzFU/s400/surprised%2Bemoticon.png'>");
-
-      // Gestion des messages private
-      if (message.charAt(0) == '@') {
-        if (message.contains(" ")) {
-          System.out.println("private msg : " + message);
-          int firstSpace = message.indexOf(" ");
-          String userPrivate = message.substring(1, firstSpace);
-          server.sendMessageToUser(message.substring(firstSpace + 1, message.length()), user, userPrivate);
-        }
-
         // Gestion du changement
-      } else if (message.charAt(0) == '#') {
+      if (message.charAt(0) == '#') {
         user.changeColor(message);
         // update color for all other users
         this.server.broadcastAllUsers();
