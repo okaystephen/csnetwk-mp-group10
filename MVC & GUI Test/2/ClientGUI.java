@@ -156,14 +156,16 @@ public class ClientGUI extends Thread {
                     servername = client_ip_field.getText();
                     PORT = Integer.parseInt(portnumber);
 
-                    appendPane(client_chatlog, "<span>Connecting to " + servername + " on port " + PORT + "...</span>");
+                    appendPane(client_chatlog,
+                            "<br><span>Connecting to " + servername + " on port " + PORT + "...</span>");
                     server = new Socket(servername, PORT);
 
                     appendPane(client_chatlog,
-                            "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span>");
+                            "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span><br>");
 
-                    appendPane(client_chatlog,
-                            "<br><span>Hey <b>" + username + "</b>! you may start chatting now.</span><br><br>");
+                    // appendPane(client_chatlog,
+                    // "<br><span>Hey <b>" + username + "</b>! you may start chatting
+                    // now.</span><br><br>");
 
                     input = new BufferedReader(new InputStreamReader(server.getInputStream()));
                     output = new PrintWriter(server.getOutputStream(), true);
