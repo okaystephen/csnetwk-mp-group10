@@ -158,13 +158,12 @@ public class ClientGUI extends Thread {
                     client_port_field.setText("");
                     client_ip_field.setText("");
 
-                    // appendPane(client_chatlog,
-                    // "<span>Successfully connected to " + server.getRemoteSocketAddress() +
-                    // "</span>");
-                    // server = new Socket(servername, PORT);
+                    appendPane(client_chatlog, "<span>Connecting to " + servername + " on port " + PORT + "...</span>");
+                    server = new Socket(servername, PORT);
 
-                    appendPane(client_chatlog,
-                            "<br><span>Hey <b>" + username + "</b>! you may start chatting now.</span><br><br>");
+                    appendPane(client_chatlog, "<span>Successfully connected to " + server.getRemoteSocketAddress() + "</span>");
+
+                    appendPane(client_chatlog, "<br><span>Hey <b>" + username + "</b>! you may start chatting now.</span><br><br>");
 
                     input = new BufferedReader(new InputStreamReader(server.getInputStream()));
                     output = new PrintWriter(server.getOutputStream(), true);
@@ -272,8 +271,8 @@ public class ClientGUI extends Thread {
     }
 
     private void appendPane(final JTextPane pane, final String message) {
-        final HTMLDocument doc = (HTMLDocument) pane.getDocument();
-        final HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
+         HTMLDocument doc = (HTMLDocument) pane.getDocument();
+         HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
         try {
             editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
             pane.setCaretPosition(doc.getLength());

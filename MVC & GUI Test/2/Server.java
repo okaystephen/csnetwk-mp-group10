@@ -42,7 +42,7 @@ public class Server {
       String nickname = (new Scanner(client.getInputStream())).nextLine();
       nickname = nickname.replace(",", ""); // ',' use for serialisation
       nickname = nickname.replace(" ", "_");
-      System.out.println("New Client: \"" + nickname + "\"\n\t     Host:" + client.getInetAddress().getHostAddress());
+      System.out.println("New Client: \"" + nickname + "\"\nIP Address: " + client.getInetAddress().getHostAddress());
 
       // create new User
       User newUser = new User(client, nickname);
@@ -51,9 +51,7 @@ public class Server {
       this.clients.add(newUser);
 
       // Welcome msg
-      newUser.getOutStream()
-          .println("<img src='https://www.kizoa.fr/img/e8nZC.gif' height='42' width='42'>" + "<b>Welcome</b> "
-              + newUser.toString() + "<img src='https://www.kizoa.fr/img/e8nZC.gif' height='42' width='42'>");
+      newUser.getOutStream().println("<b>Welcome</b> "+ newUser.toString());
 
       // create a new thread for newUser incoming messages handling
       new Thread(new UserHandler(this, newUser)).start();
