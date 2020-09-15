@@ -61,13 +61,14 @@ public class Server {
   // delete a user from the list
   public void removeUser(User user) {
     this.clients.remove(user);
-    System.out.println("Client " + user + " disconnected...");
+    System.out.println(user.getNickname() + " disconnected...");
   }
 
   // send incoming msg to all Users
   public void broadcastMessages(String msg, User userSender) {
     for (User client : this.clients) {
       client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+      System.out.println(userSender.getNickname() + " sent a message");
     }
   }
 
