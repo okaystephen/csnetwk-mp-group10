@@ -51,7 +51,10 @@ public class Server {
       Date clientdate = new Date();  
       Timestamp clientts=new Timestamp(clientdate.getTime());  
       SimpleDateFormat clientformatter = new SimpleDateFormat("HH:mm:ss");  
-      System.out.println("\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + "\n\t  IP Address: " + client.getInetAddress().getHostAddress());
+      System.out.println("\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + 
+                        "\n\t" + client.getRemoteSocketAddress());
+                        // "\n\t  IP Address: " + client.getInetAddress().getHostAddress() +
+                        // "\n\t  Port: " + client.getRemoteSocketAddress());
 
       // create new User
       User newUser = new User(client, nickname);
