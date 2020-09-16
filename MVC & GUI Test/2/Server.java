@@ -10,18 +10,64 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.awt.Color;
+import java.sql.Timestamp;    
+import java.util.Date;    
+import java.text.SimpleDateFormat;  
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.event.*;
+import javax.swing.text.html.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class Server {
+  private final JFrame frame;
+  private final JPanel panel;
+
+  private final JScrollPane vertical_log;
+
+  private final JTextPane client_chatlog;
 
   private int port;
   private List<User> clients;
   private ServerSocket server;
+
+  public String console_log;
 
   public static void main(String[] args) throws IOException {
     new Server(12345).run();
   }
 
   public Server(int port) {
+    frame = new JFrame("De La Salle Usap Server");
+    panel = new JPanel();
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    client_chatlog = new JTextPane();
+    client_chatlog.setEditable(false);
+    client_chatlog.setVisible(true);
+
+    client_chatlog.setContentType("text/html");
+    client_chatlog.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+    panel.setPreferredSize(new Dimension(450, 300));
+    panel.setLayout(null);
+
+    vertical_log = new JScrollPane(client_chatlog);
+    vertical_log.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+    panel.add(client_chatlog);
+    panel.add(vertical_log);
+    vertical_log.setBounds(25, 60, 375, 200);
+
+    frame.getContentPane().add(panel);
+    frame.pack();
+    frame.setResizable(false);
+    frame.setVisible(true);
+
     this.port = port;
     this.clients = new ArrayList<User>();
   }
@@ -32,8 +78,13 @@ public class Server {
         this.close();
       }
     };
-
-    System.out.println("Port 12345 is now open.");
+    Date date = new Date();  
+    Timestamp ts=new Timestamp(date.getTime());  
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    console_log = "\n" + formatter.format(ts) + ": " + "Listening at Port 12345";
+    System.out.println(console_log);
+    appendPane(client_chatlog, console_log);
+    
 
     while (true) {
       // accepts a new client
@@ -43,7 +94,15 @@ public class Server {
       String nickname = (new Scanner(client.getInputStream())).nextLine();
       nickname = nickname.replace(",", ""); // ',' use for serialisation
       nickname = nickname.replace(" ", "_");
-      System.out.println("New Client: \"" + nickname + "\"\nIP Address: " + client.getInetAddress().getHostAddress());
+      Date clientdate = new Date();  
+      Timestamp clientts=new Timestamp(clientdate.getTime());  
+      SimpleDateFormat clientformatter = new SimpleDateFormat("HH:mm:ss");
+      console_log = "\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + 
+                    "\n\t" + client.getRemoteSocketAddress();
+                    // "\n\t  IP Address: " + client.getInetAddress().getHostAddress() +
+                    // "\n\t  Port: " + client.getRemoteSocketAddress());
+      System.out.println(console_log);
+      appendPane(client_chatlog, console_log);
 
       // create new User
       User newUser = new User(client, nickname);
@@ -52,8 +111,7 @@ public class Server {
       this.clients.add(newUser);
 
       // Welcome msg
-      newUser.getOutStream()
-          .println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
+      newUser.getOutStream().println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
 
       // create a new thread for newUser incoming messages handling
       new Thread(new UserHandler(this, newUser)).start();
@@ -63,13 +121,43 @@ public class Server {
   // delete a user from the list
   public void removeUser(User user) {
     this.clients.remove(user);
-    System.out.println("Client " + user + " disconnected...");
+    Date date = new Date();  
+    Timestamp ts=new Timestamp(date.getTime());  
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    console_log = "\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...";
+    System.out.println(console_log);
+    appendPane(client_chatlog, console_log);
   }
 
   // send incoming msg to all Users
   public void broadcastMessages(String msg, User userSender) {
+    boolean success = false;
+    String receiver = "";
     for (User client : this.clients) {
-      client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+      if(this.clients.size() == 2){
+        client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+        success = true;
+        if(client != userSender){
+          receiver = client.getNickname();
+        }
+      }
+      else{
+        userSender.getOutStream().println("Message sending failed... No other client online");
+        Date date = new Date();
+        Timestamp ts=new Timestamp(date.getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        console_log = "\n" + formatter.format(ts) + ": " + "Message sending failed...";
+        System.out.println(console_log);
+        appendPane(client_chatlog, console_log);
+      }
+    }
+    if(success){
+      Date date = new Date();  
+      Timestamp ts=new Timestamp(date.getTime());  
+      SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+      console_log = "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver;
+      System.out.println(console_log);
+      appendPane(client_chatlog, console_log);
     }
   }
 
@@ -80,18 +168,14 @@ public class Server {
     }
   }
 
-  // send message to a User (String)
-  public void sendMessageToUser(String msg, User userSender, String user) {
-    boolean find = false;
-    for (User client : this.clients) {
-      if (client.getNickname().equals(user) && client != userSender) {
-        find = true;
-        userSender.getOutStream().println(userSender.toString() + " -> " + client.toString() + ": " + msg);
-        client.getOutStream().println("(<b>Private</b>)" + userSender.toString() + "<span>: " + msg + "</span>");
-      }
-    }
-    if (!find) {
-      userSender.getOutStream().println(userSender.toString() + " -> (<b>no one!</b>): " + msg);
+  private void appendPane(final JTextPane pane, final String message) {
+    HTMLDocument doc = (HTMLDocument) pane.getDocument();
+    HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
+    try {
+        editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
+        pane.setCaretPosition(doc.getLength());
+    } catch (final Exception e) {
+        e.printStackTrace();
     }
   }
 }
@@ -115,16 +199,11 @@ class UserHandler implements Runnable {
     while (sc.hasNextLine()) {
       message = sc.nextLine();
 
-      // Gestion des messages private
-      if (message.charAt(0) == '@') {
-        if (message.contains(" ")) {
-          System.out.println("private msg : " + message);
-          int firstSpace = message.indexOf(" ");
-          String userPrivate = message.substring(1, firstSpace);
-          server.sendMessageToUser(message.substring(firstSpace + 1, message.length()), user, userPrivate);
-        }
-
         // Gestion du changement
+      if (message.charAt(0) == '#') {
+        user.changeColor(message);
+        // update color for all other users
+        this.server.broadcastAllUsers();
       } else {
         // update user list
         server.broadcastMessages(message, user);
