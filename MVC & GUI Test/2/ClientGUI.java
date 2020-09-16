@@ -288,8 +288,6 @@ public class ClientGUI extends Thread {
                     panel.revalidate();
                     panel.repaint();
 
-                    
-
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(panel, e.getMessage());
                 }
