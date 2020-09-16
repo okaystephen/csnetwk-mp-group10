@@ -80,7 +80,7 @@ public class Server {
     server_savelog_button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
         try {
-          String log = client_chatlog.getText();
+          String log = client_chatlog.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 
           JFileChooser chooser = new JFileChooser();
           chooser.setCurrentDirectory(new java.io.File("."));
