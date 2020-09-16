@@ -35,6 +35,8 @@ public class Server {
   private List<User> clients;
   private ServerSocket server;
 
+  public String console_log;
+
   public static void main(String[] args) throws IOException {
     new Server(12345).run();
   }
@@ -78,9 +80,10 @@ public class Server {
     };
     Date date = new Date();  
     Timestamp ts=new Timestamp(date.getTime());  
-    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
-    System.out.println(formatter.format(ts) + ": " + "Listening at Port 12345");
-    appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + "Listening at Port 12345");
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    console_log = "\n" + formatter.format(ts) + ": " + "Listening at Port 12345";
+    System.out.println(console_log);
+    appendPane(client_chatlog, console_log);
     
 
     while (true) {
@@ -93,13 +96,13 @@ public class Server {
       nickname = nickname.replace(" ", "_");
       Date clientdate = new Date();  
       Timestamp clientts=new Timestamp(clientdate.getTime());  
-      SimpleDateFormat clientformatter = new SimpleDateFormat("HH:mm:ss");  
-      System.out.println("\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + 
-                        "\n\t" + client.getRemoteSocketAddress());
-                        // "\n\t  IP Address: " + client.getInetAddress().getHostAddress() +
-                        // "\n\t  Port: " + client.getRemoteSocketAddress());
-      appendPane(client_chatlog, "\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + 
-                  "\n\t" + client.getRemoteSocketAddress());
+      SimpleDateFormat clientformatter = new SimpleDateFormat("HH:mm:ss");
+      console_log = "\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + 
+                    "\n\t" + client.getRemoteSocketAddress();
+                    // "\n\t  IP Address: " + client.getInetAddress().getHostAddress() +
+                    // "\n\t  Port: " + client.getRemoteSocketAddress());
+      System.out.println(console_log);
+      appendPane(client_chatlog, console_log);
 
       // create new User
       User newUser = new User(client, nickname);
@@ -120,9 +123,10 @@ public class Server {
     this.clients.remove(user);
     Date date = new Date();  
     Timestamp ts=new Timestamp(date.getTime());  
-    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
-    System.out.println("\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...");
-    appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...");
+    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    console_log = "\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...";
+    System.out.println(console_log);
+    appendPane(client_chatlog, console_log);
   }
 
   // send incoming msg to all Users
@@ -142,16 +146,18 @@ public class Server {
         Date date = new Date();
         Timestamp ts=new Timestamp(date.getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-        System.out.println("\n" + formatter.format(ts) + ": " + "Message sending failed...");
-        appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + "Message sending failed...");
+        console_log = "\n" + formatter.format(ts) + ": " + "Message sending failed...";
+        System.out.println(console_log);
+        appendPane(client_chatlog, console_log);
       }
     }
     if(success){
       Date date = new Date();  
       Timestamp ts=new Timestamp(date.getTime());  
       SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-      System.out.println("\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver);
-      appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver);
+      console_log = "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver;
+      System.out.println(console_log);
+      appendPane(client_chatlog, console_log);
     }
   }
 
