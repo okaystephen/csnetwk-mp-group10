@@ -173,6 +173,38 @@ public class Server {
     }
   }
 
+  // send incoming msg to all Users
+  public void broadcastFile(String msg, User userSender) {
+    boolean success = false;
+    String receiver = "";
+    for (User client : this.clients) {
+      if(this.clients.size() == 2){
+        client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+        success = true;
+        if(client != userSender){
+          receiver = client.getNickname();
+        }
+      }
+      else{
+        userSender.getOutStream().println("File sending failed... No other client online");
+        Date date = new Date();
+        Timestamp ts=new Timestamp(date.getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        console_log = "\n" + formatter.format(ts) + ": " + "File sending failed...";
+        System.out.println(console_log);
+        appendPane(client_chatlog, console_log);
+      }
+    }
+    if(success){
+      Date date = new Date();  
+      Timestamp ts=new Timestamp(date.getTime());  
+      SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+      console_log = "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a file to " + receiver;
+      System.out.println(console_log);
+      appendPane(client_chatlog, console_log);
+    }
+  }
+
   // send list of clients to all Users
   public void broadcastAllUsers() {
     for (User client : this.clients) {
@@ -212,11 +244,12 @@ class UserHandler implements Runnable {
       message = sc.nextLine();
 
         // Gestion du changement
-      if (message.charAt(0) == '#') {
+      if (message.charAt(0) == '(') {
         // user.changeColor(message);
         // update color for all other users
-        this.server.broadcastAllUsers();
-      } else {
+        this.server.broadcastFile(message, user);
+      }
+      else {
         // update user list
         server.broadcastMessages(message, user);
       }
