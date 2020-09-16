@@ -61,7 +61,6 @@ public class Server {
     vertical_log = new JScrollPane(client_chatlog);
     vertical_log.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-    // panel.add(client_chatlog);
     panel.add(vertical_log);
     panel.add(server_savelog_button);
 
@@ -143,13 +142,13 @@ public class Server {
       System.out.println(console_log);
       appendPane(client_chatlog, console_log);
 
-      // create new User
+      // create a new user
       User newUser = new User(client, nickname);
 
       // add newUser message to list
       this.clients.add(newUser);
 
-      // Welcome msg
+      // welcome message
       newUser.getOutStream()
           .println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
 
@@ -181,7 +180,7 @@ public class Server {
     }
   }
 
-  // send incoming msg to all Users
+  // send incoming messages to all users
   public void broadcastMessages(String msg, User userSender) {
     boolean success = false;
     String receiver = "";
@@ -212,7 +211,7 @@ public class Server {
     }
   }
 
-  // send incoming msg to all Users
+  // send incoming messages to all users
   public void broadcastFile(String msg, User userSender) {
     boolean success = false;
     String receiver = "";
@@ -243,7 +242,7 @@ public class Server {
     }
   }
 
-  // send list of clients to all Users
+  // send list of clients to all users
   public void broadcastAllUsers() {
     for (User client : this.clients) {
       client.getOutStream().println(this.clients);
@@ -276,12 +275,11 @@ class UserHandler implements Runnable {
   public void run() {
     String message;
 
-    // when there is a new message, broadcast to all
+    // broadcast to all when there is incoming message
     Scanner sc = new Scanner(this.user.getInputStream());
     while (sc.hasNextLine()) {
       message = sc.nextLine();
 
-      // Gestion du changement
       if (message.charAt(0) == '(') {
         // user.changeColor(message);
         // update color for all other users
@@ -291,7 +289,7 @@ class UserHandler implements Runnable {
         server.broadcastMessages(message, user);
       }
     }
-    // end of Thread
+    // end thread
     server.removeUser(user);
     this.server.broadcastAllUsers();
     sc.close();
@@ -314,11 +312,11 @@ class User {
     this.client = client;
     this.nickname = name;
     this.userId = nbUser;
-    this.color = ColorInt.getColor(this.userId);
+    this.color = ColorFont.getColor(this.userId);
     nbUser += 1;
   }
 
-  // getteur
+  // getters
   public PrintStream getOutStream() {
     return this.streamOut;
   }
@@ -331,7 +329,7 @@ class User {
     return this.nickname;
   }
 
-  // print user with his color
+  // print user with respective color
   public String toString() {
 
     return "<u><span style='color:" + this.color + "'>" + this.getNickname() + "</span></u>";
@@ -339,20 +337,9 @@ class User {
   }
 }
 
-class ColorInt {
-  public static String[] mColors = { "#3079ab", // dark blue
-      "#e15258", // red
-      "#f9845b", // orange
-      "#7d669e", // purple
-      "#53bbb4", // aqua
-      "#51b46d", // green
-      "#e0ab18", // mustard
-      "#f092b0", // pink
-      "#e8d174", // yellow
-      "#e39e54", // orange
-      "#d64d4d", // red
-      "#4d7358", // green
-  };
+class ColorFont {
+  public static String[] mColors = { "#3079ab", "#e15258", "#f9845b", "#7d669e", "#53bbb4", "#51b46d", "#e0ab18",
+      "#f092b0", "#e8d174", "#e39e54", "#d64d4d", "#4d7358", };
 
   public static String getColor(int i) {
     return mColors[i % mColors.length];
