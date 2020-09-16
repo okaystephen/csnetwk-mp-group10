@@ -14,7 +14,22 @@ import java.sql.Timestamp;
 import java.util.Date;    
 import java.text.SimpleDateFormat;  
 
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.event.*;
+import javax.swing.text.html.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 public class Server {
+  private final JFrame frame;
+  private final JPanel panel;
+
+  private final JScrollPane vertical_log;
+
+  private final JTextPane client_chatlog;
 
   private int port;
   private List<User> clients;
@@ -25,6 +40,32 @@ public class Server {
   }
 
   public Server(int port) {
+    frame = new JFrame("De La Salle Usap Server");
+    panel = new JPanel();
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    client_chatlog = new JTextPane();
+    client_chatlog.setEditable(false);
+    client_chatlog.setVisible(true);
+
+    client_chatlog.setContentType("text/html");
+    client_chatlog.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+    panel.setPreferredSize(new Dimension(450, 300));
+    panel.setLayout(null);
+
+    vertical_log = new JScrollPane(client_chatlog);
+    vertical_log.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+    panel.add(client_chatlog);
+    panel.add(vertical_log);
+    vertical_log.setBounds(25, 60, 375, 200);
+
+    frame.getContentPane().add(panel);
+    frame.pack();
+    frame.setResizable(false);
+    frame.setVisible(true);
+
     this.port = port;
     this.clients = new ArrayList<User>();
   }
@@ -39,6 +80,8 @@ public class Server {
     Timestamp ts=new Timestamp(date.getTime());  
     SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
     System.out.println(formatter.format(ts) + ": " + "Listening at Port 12345");
+    appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + "Listening at Port 12345");
+    
 
     while (true) {
       // accepts a new client
@@ -55,6 +98,8 @@ public class Server {
                         "\n\t" + client.getRemoteSocketAddress());
                         // "\n\t  IP Address: " + client.getInetAddress().getHostAddress() +
                         // "\n\t  Port: " + client.getRemoteSocketAddress());
+      appendPane(client_chatlog, "\n" + clientformatter.format(clientts) + ": " + nickname + " connected" + 
+                  "\n\t" + client.getRemoteSocketAddress());
 
       // create new User
       User newUser = new User(client, nickname);
@@ -63,8 +108,7 @@ public class Server {
       this.clients.add(newUser);
 
       // Welcome msg
-      newUser.getOutStream()
-          .println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
+      newUser.getOutStream().println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
 
       // create a new thread for newUser incoming messages handling
       new Thread(new UserHandler(this, newUser)).start();
@@ -78,6 +122,7 @@ public class Server {
     Timestamp ts=new Timestamp(date.getTime());  
     SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
     System.out.println("\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...");
+    appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...");
   }
 
   // send incoming msg to all Users
@@ -98,6 +143,7 @@ public class Server {
         Timestamp ts=new Timestamp(date.getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
         System.out.println("\n" + formatter.format(ts) + ": " + "Message sending failed...");
+        appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + "Message sending failed...");
       }
     }
     if(success){
@@ -105,6 +151,7 @@ public class Server {
       Timestamp ts=new Timestamp(date.getTime());  
       SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
       System.out.println("\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver);
+      appendPane(client_chatlog, "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver);
     }
   }
 
@@ -112,6 +159,17 @@ public class Server {
   public void broadcastAllUsers() {
     for (User client : this.clients) {
       client.getOutStream().println(this.clients);
+    }
+  }
+
+  private void appendPane(final JTextPane pane, final String message) {
+    HTMLDocument doc = (HTMLDocument) pane.getDocument();
+    HTMLEditorKit editorKit = (HTMLEditorKit) pane.getEditorKit();
+    try {
+        editorKit.insertHTML(doc, doc.getLength(), message, 0, 0, null);
+        pane.setCaretPosition(doc.getLength());
+    } catch (final Exception e) {
+        e.printStackTrace();
     }
   }
 }
