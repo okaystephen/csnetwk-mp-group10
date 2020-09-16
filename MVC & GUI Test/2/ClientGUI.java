@@ -177,7 +177,7 @@ public class ClientGUI extends Thread {
                         thread = new Read();
                         thread.start();
 
-                        output.println("<b>has connected.</b>");
+                        // output.println("<b>has connected.</b>");
 
                         panel.remove(client_name_field);
                         panel.remove(client_port_field);
@@ -255,7 +255,7 @@ public class ClientGUI extends Thread {
         client_logout_button.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent ae) {
                 try {
-                    output.println("<b>has logged out.</b>");
+                    // output.println("<b>has logged out.</b>");
 
                     // clear textfield
                     client_name_field.setText("");
@@ -265,6 +265,7 @@ public class ClientGUI extends Thread {
                     client_active.setText("");
 
                     thread.interrupt();
+                    output.close();
 
                     appendPane(client_chatlog, "<br><span>You have logged out!</span><br>");
 
@@ -287,7 +288,7 @@ public class ClientGUI extends Thread {
                     panel.revalidate();
                     panel.repaint();
 
-                    output.close();
+                    
 
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(panel, e.getMessage());

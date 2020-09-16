@@ -113,6 +113,12 @@ public class Server {
       // Welcome msg
       newUser.getOutStream().println("<br><b>Welcome</b> " + newUser.toString() + "! You may start chatting now.</span><br><br>");
 
+      for (User clients : this.clients){
+        if(clients != newUser){
+          clients.getOutStream().println(newUser.toString() + " <b>has connected.</b>");
+        }
+      }
+
       // create a new thread for newUser incoming messages handling
       new Thread(new UserHandler(this, newUser)).start();
     }
@@ -127,6 +133,12 @@ public class Server {
     console_log = "\n" + formatter.format(ts) + ": " + user.getNickname() + " disconnected...";
     System.out.println(console_log);
     appendPane(client_chatlog, console_log);
+
+    for (User clients : this.clients){
+      if(clients != user){
+        clients.getOutStream().println(user.toString() + " <b>has logged out.</b>");
+      }
+    }
   }
 
   // send incoming msg to all Users
@@ -201,7 +213,7 @@ class UserHandler implements Runnable {
 
         // Gestion du changement
       if (message.charAt(0) == '#') {
-        user.changeColor(message);
+        // user.changeColor(message);
         // update color for all other users
         this.server.broadcastAllUsers();
       } else {
