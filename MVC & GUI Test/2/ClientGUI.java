@@ -244,6 +244,24 @@ public class ClientGUI extends Thread {
                         File selectedFile = file.getSelectedFile();
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
                         output.println("(sent a file: " + selectedFile.getName() + ")");
+
+                        // TESTING CODE
+                        byte[] mybytearray = new byte[(int) selectedFile.length()];
+                        FileInputStream fis = new FileInputStream(selectedFile);
+                        BufferedInputStream bis = new BufferedInputStream(fis);
+                        DataInputStream dis = new DataInputStream(bis);
+                        dis.readFully(mybytearray, 0, mybytearray.length);
+
+                        // handle file send over socket
+                        OutputStream os = server.getOutputStream();
+
+                        // Sending file name and file size to the server
+                        DataOutputStream dos = new DataOutputStream(os);
+                        dos.writeUTF(selectedFile.getName());
+                        dos.writeLong(mybytearray.length);
+                        dos.write(mybytearray, 0, mybytearray.length);
+                        dos.flush();
+                        System.out.println("File " + selectedFile.getName() + " sent to client.");
                     }
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(panel, e.getMessage());
@@ -255,8 +273,6 @@ public class ClientGUI extends Thread {
         client_logout_button.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent ae) {
                 try {
-                    // output.println("<b>has logged out.</b>");
-
                     // clear textfield
                     client_name_field.setText("");
                     client_port_field.setText("");

@@ -98,6 +98,7 @@ public class Server {
               myWriter.write(log);
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
+              JOptionPane.showMessageDialog(panel, "Chatlog text file saved!");
             } else {
               System.out.println("File already exists.");
             }
@@ -211,7 +212,7 @@ public class Server {
     }
   }
 
-  // send incoming messages to all users
+  // send incoming file to all users
   public void broadcastFile(String msg, User userSender) {
     boolean success = false;
     String receiver = "";
@@ -331,9 +332,7 @@ class User {
 
   // print user with respective color
   public String toString() {
-
     return "<u><span style='color:" + this.color + "'>" + this.getNickname() + "</span></u>";
-
   }
 }
 
