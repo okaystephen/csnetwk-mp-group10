@@ -8,10 +8,10 @@ public class TCPServer {
 		// and the second one as port number
 		// If port number is not present, default it to 3333
 		// If directory path is not present, show error
-		if(args.length == 0) {
-			System.out.println("Please enter the server directory address as first argument while running from command line.");
-		}
-		else {
+		if (args.length == 0) {
+			System.out.println(
+					"Please enter the server directory address as first argument while running from command line.");
+		} else {
 			int id = 1;
 			System.out.println("Server started...");
 			System.out.println("Waiting for connections...");
@@ -19,16 +19,16 @@ public class TCPServer {
 			ServerSocket welcomeSocket;
 
 			// port number is passed by the user
-			if(args.length >= 2){
+			if (args.length >= 2) {
 				welcomeSocket = new ServerSocket(Integer.parseInt(args[1]));
-			}
-			else{
+			} else {
 				welcomeSocket = new ServerSocket(3333);
 			}
 
 			while (true) {
 				Socket connectionSocket = welcomeSocket.accept();
-				System.out.println("Client with ID " + id + " connected from " + connectionSocket.getInetAddress().getHostName() + "...");
+				System.out.println("Client with ID " + id + " connected from "
+						+ connectionSocket.getInetAddress().getHostName() + "...");
 				Thread server = new ThreadedServer(connectionSocket, id, args[0]);
 				id++;
 				server.start();
@@ -69,7 +69,7 @@ class ThreadedServer extends Thread {
 			int len = names.size();
 			oout.writeObject(String.valueOf(names.size()));
 
-			for(String name: names) {
+			for (String name : names) {
 				oout.writeObject(name);
 			}
 
@@ -82,14 +82,14 @@ class ThreadedServer extends Thread {
 				FileInputStream file = null;
 				BufferedInputStream bis = null;
 				boolean fileExists = true;
-				System.out.println("Request to download file " + filename + " recieved from " + connectionSocket.getInetAddress().getHostName() + "...");
+				System.out.println("Request to download file " + filename + " recieved from "
+						+ connectionSocket.getInetAddress().getHostName() + "...");
 				filename = dirName + filename;
-				//System.out.println(filename);
+				// System.out.println(filename);
 				try {
 					file = new FileInputStream(filename);
 					bis = new BufferedInputStream(file);
-				} 
-				catch (FileNotFoundException excep) {
+				} catch (FileNotFoundException excep) {
 					fileExists = false;
 					System.out.println("FileNotFoundException:" + excep.getMessage());
 				}
@@ -103,8 +103,7 @@ class ThreadedServer extends Thread {
 					file.close();
 					oout.close();
 					output.close();
-				}
-				else {
+				} else {
 					oout = new ObjectOutputStream(output);
 					oout.writeObject("FileNotFound");
 					bis.close();
@@ -112,11 +111,11 @@ class ThreadedServer extends Thread {
 					oout.close();
 					output.close();
 				}
-			} 
-			else{
+			} else {
 				try {
 					boolean complete = true;
-					System.out.println("Request to upload file " + name + " recieved from " + connectionSocket.getInetAddress().getHostName() + "...");
+					System.out.println("Request to upload file " + name + " recieved from "
+							+ connectionSocket.getInetAddress().getHostName() + "...");
 					File directory = new File(dirName);
 					if (!directory.exists()) {
 						System.out.println("Dir made");
@@ -144,17 +143,16 @@ class ThreadedServer extends Thread {
 					System.out.println(exc.getMessage());
 				}
 			}
-		} 
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}
 	}
 
-	private static void sendBytes(BufferedInputStream in , OutputStream out) throws Exception {
+	private static void sendBytes(BufferedInputStream in, OutputStream out) throws Exception {
 		int size = 9022386;
 		byte[] data = new byte[size];
 		int bytes = 0;
-		int c = in .read(data, 0, data.length);
+		int c = in.read(data, 0, data.length);
 		out.write(data, 0, c);
 		out.flush();
 	}
