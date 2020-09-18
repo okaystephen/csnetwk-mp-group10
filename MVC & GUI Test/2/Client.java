@@ -121,10 +121,6 @@ public class Client extends Thread {
         panel.add(client_port_label);
         panel.add(client_proceed_button);
 
-        // panel.add(client_file_button);
-        // panel.add(client_message_button);
-        // panel.add(vertical_message);
-
         // set component bounds (only needed by Absolute Positioning)
         client_logout_button.setBounds(480, 20, 100, 25);
         vertical_user.setBounds(410, 80, 165, 180);
@@ -312,6 +308,7 @@ public class Client extends Thread {
         });
     }
 
+    // Sending of messages
     public void send() {
         try {
             String message = client_message_field.getText().trim();
@@ -324,7 +321,6 @@ public class Client extends Thread {
             client_message_field.setText(null);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
-            // System.exit(0);
         }
     }
 
