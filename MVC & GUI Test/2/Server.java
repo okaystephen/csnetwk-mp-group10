@@ -94,7 +94,7 @@ public class Server {
             File logfile = new File(chooser.getSelectedFile() + "/chatlog.txt");
             if (logfile.createNewFile()) {
               System.out.println("File created: " + logfile.getName());
-              FileWriter myWriter = new FileWriter("chatlog.txt");
+              FileWriter myWriter = new FileWriter(chooser.getSelectedFile() + "/chatlog.txt");
               myWriter.write(log);
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
@@ -218,6 +218,12 @@ public class Server {
     String receiver = "";
     for (User client : this.clients) {
       if (this.clients.size() == 2) {
+        // byte[] mybytearray = new byte[32674];
+        // FileInputStream fis = new FileInputStream(msg);
+        // BufferedInputStream bis = new BufferedInputStream(fis);
+        // DataInputStream dis = new DataInputStream(bis);
+        // dis.readFully(mybytearray, 0, mybytearray.length);
+
         client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
         success = true;
         if (client != userSender) {
