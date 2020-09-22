@@ -247,19 +247,6 @@ public class Client extends Thread {
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
                         output.println("(sent a file: " + selectedFile.getName() + ")");
 
-                        long length = selectedFile.length();
-                        byte[] bytes = new byte[16 * 1024];
-                        InputStream in = new FileInputStream(file);
-                        OutputStream out = socket.getOutputStream();
-
-                        int count;
-                        while ((count = in.read(bytes)) > 0) {
-                            out.write(bytes, 0, count);
-                        }
-
-                        out.close();
-                        in.close();
-                        socket.close();
                     }
 
                 } catch (final Exception e) {
