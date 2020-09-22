@@ -240,29 +240,28 @@ public class Client extends Thread {
                 try {
                     JFileChooser file = new JFileChooser();
                     int result = file.showOpenDialog(null);
+
                     if (result == JFileChooser.APPROVE_OPTION) {
+
                         File selectedFile = file.getSelectedFile();
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
                         output.println("(sent a file: " + selectedFile.getName() + ")");
 
-                        // TESTING CODE
-                        byte[] mybytearray = new byte[(int) selectedFile.length()];
-                        FileInputStream fis = new FileInputStream(selectedFile);
-                        BufferedInputStream bis = new BufferedInputStream(fis);
-                        DataInputStream dis = new DataInputStream(bis);
-                        dis.readFully(mybytearray, 0, mybytearray.length);
+                        long length = selectedFile.length();
+                        byte[] bytes = new byte[16 * 1024];
+                        InputStream in = new FileInputStream(file);
+                        OutputStream out = socket.getOutputStream();
 
-                        // handle file send over socket
-                        OutputStream os = server.getOutputStream();
+                        int count;
+                        while ((count = in.read(bytes)) > 0) {
+                            out.write(bytes, 0, count);
+                        }
 
-                        // Sending file name and file size to the server
-                        DataOutputStream dos = new DataOutputStream(os);
-                        dos.writeUTF(selectedFile.getName());
-                        dos.writeLong(mybytearray.length);
-                        dos.write(mybytearray, 0, mybytearray.length);
-                        dos.flush();
-                        System.out.println("File " + selectedFile.getName() + " sent to client.");
+                        out.close();
+                        in.close();
+                        socket.close();
                     }
+
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(panel, e.getMessage());
                 }

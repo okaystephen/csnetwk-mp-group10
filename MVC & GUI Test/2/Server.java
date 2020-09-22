@@ -224,6 +224,29 @@ public class Server {
         // DataInputStream dis = new DataInputStream(bis);
         // dis.readFully(mybytearray, 0, mybytearray.length);
 
+        // TEST
+
+        // DataInputStream dis = new DataInputStream(client.getInputStream());
+        // FileOutputStream fos = new FileOutputStream("testfile.jpg");
+        // byte[] buffer = new byte[4096];
+
+        // int filesize = 15123; // Send file size in separate msg
+        // int read = 0;
+        // int totalRead = 0;
+        // int remaining = filesize;
+        // while ((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0)
+        // {
+        // totalRead += read;
+        // remaining -= read;
+        // System.out.println("read " + totalRead + " bytes.");
+        // fos.write(buffer, 0, read);
+        // }
+
+        // fos.close();
+        // dis.close();
+
+        // END TEST
+
         client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
         success = true;
         if (client != userSender) {
@@ -287,12 +310,11 @@ class UserHandler implements Runnable {
     while (sc.hasNextLine()) {
       message = sc.nextLine();
 
-      if (message.charAt(0) == '(') {
-        // user.changeColor(message);
-        // update color for all other users
-        this.server.broadcastFile(message, user);
+      if (message.equals("(sent a file: ")) {
+        // broadcast files
+        server.broadcastFile(message, user);
       } else {
-        // update user list
+        // broadcast messages
         server.broadcastMessages(message, user);
       }
     }
