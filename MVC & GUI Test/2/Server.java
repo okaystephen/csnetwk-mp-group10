@@ -220,69 +220,60 @@ public class Server {
     String receiver = "";
     for (User client : this.clients) {
       if (this.clients.size() == 2) {
-        JFileChooser chooser = new JFileChooser();
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1),
-            msg.substring(msg.lastIndexOf(".") + 1)));
-        chooser.setCurrentDirectory(new java.io.File("."));
-        chooser.setDialogTitle("Save File To...");
-        chooser.setAcceptAllFileFilterUsed(false);
 
-        if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-          String filepath = chooser.getSelectedFile().toString();
+        // 0 = yes, 1 = no
+        int reply = JOptionPane.showConfirmDialog(null,
+            userSender.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ")
+                + " sent a file, would you like to save it?",
+            "Receive File Permission", JOptionPane.YES_NO_OPTION);
 
-          if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
-            filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
-          }
+        if (reply == JOptionPane.YES_OPTION) {
+          JFileChooser chooser = new JFileChooser();
+          chooser.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1)));
+          chooser.setCurrentDirectory(new java.io.File("."));
+          chooser.setDialogTitle("Save File To...");
+          chooser.setAcceptAllFileFilterUsed(false);
 
-          try {
-            System.out.println("to be read: " + msg.substring(msg.lastIndexOf(":") + 1));
-            FileInputStream fReader = new FileInputStream(msg.substring(msg.lastIndexOf(":") + 1));
-            System.out.println("filepath server: " + filepath);
-            FileOutputStream fWriter = new FileOutputStream(filepath);
-            byte[] b = new byte[1024 * 16];
-            int size;
+          if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            String filepath = chooser.getSelectedFile().toString();
 
-            while ((size = fReader.read(b)) > 0) {
-              fWriter.write(b, 0, size);
+            if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
+              filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
             }
 
-            fWriter.close();
-            fReader.close();
+            try {
+              System.out.println("to be read: " + msg.substring(msg.lastIndexOf(":") + 1));
+              FileInputStream fReader = new FileInputStream(msg.substring(msg.lastIndexOf(":") + 1));
+              System.out.println("filepath server: " + filepath);
+              FileOutputStream fWriter = new FileOutputStream(filepath);
+              byte[] b = new byte[1024 * 16];
+              int size;
 
-            JOptionPane.showMessageDialog(null, "File was saved to " + chooser.getCurrentDirectory());
-          } catch (Exception err) {
-            err.printStackTrace();
+              while ((size = fReader.read(b)) > 0) {
+                fWriter.write(b, 0, size);
+              }
+
+              fWriter.close();
+              fReader.close();
+
+              JOptionPane.showMessageDialog(null, "File was saved to " + chooser.getCurrentDirectory());
+
+            } catch (Exception err) {
+              err.printStackTrace();
+            }
           }
+
+          client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+
+          if (client != userSender) {
+            receiver = client.getNickname();
+            success = true;
+          }
+        } else {
+          JOptionPane.showMessageDialog(null, "Receiving file cancelled!");
+          break;
         }
 
-        // TEST
-
-        // DataInputStream dis = new DataInputStream(client.getInputStream());
-        // FileOutputStream fos = new FileOutputStream("testfile.jpg");
-        // byte[] buffer = new byte[4096];
-
-        // int filesize = 15123; // Send file size in separate msg
-        // int read = 0;
-        // int totalRead = 0;
-        // int remaining = filesize;
-        // while ((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0)
-        // {
-        // totalRead += read;
-        // remaining -= read;
-        // System.out.println("read " + totalRead + " bytes.");
-        // fos.write(buffer, 0, read);
-        // }
-
-        // fos.close();
-        // dis.close();
-
-        // END TEST
-
-        client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
-        success = true;
-        if (client != userSender) {
-          receiver = client.getNickname();
-        }
       } else {
         userSender.getOutStream().println("File sending failed... No other client online");
         Date date = new Date();
@@ -292,8 +283,11 @@ public class Server {
         System.out.println(console_log);
         appendPane(client_chatlog, console_log);
       }
+
     }
     if (success) {
+      System.out.println("Hello I'm in success");
+
       Date date = new Date();
       Timestamp ts = new Timestamp(date.getTime());
       SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");

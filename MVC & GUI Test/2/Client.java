@@ -94,6 +94,10 @@ public class Client extends Thread {
         client_active.setContentType("text/html");
         client_active.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
+        // FOR TESTING
+        client_ip_field.setText("localhost");
+        client_port_field.setText("12345");
+
         appendPane(client_chatlog, "<br><br>" + "<h3>Welcome to De La Salle Usap!</h3>" + "<br>"
                 + "Enter your name, IP Address, and Port Number" + "<br>" + "to get started!");
 
@@ -246,7 +250,7 @@ public class Client extends Thread {
 
                         File selectedFile = file.getSelectedFile();
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-                        output.println("(sent a file:" + selectedFile.getName());
+                        output.println("(sent a file:" + selectedFile.getName() + ").");
 
                         // TESTING CODE
                         byte[] mybytearray = new byte[(int) selectedFile.length()];
