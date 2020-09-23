@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.awt.Color;
 import java.sql.Timestamp;
+import java.util.*;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -23,6 +24,7 @@ import javax.swing.event.*;
 import javax.swing.text.html.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.*;
 
 public class Server {
   private final JFrame frame;
@@ -218,11 +220,38 @@ public class Server {
     String receiver = "";
     for (User client : this.clients) {
       if (this.clients.size() == 2) {
-        // byte[] mybytearray = new byte[32674];
-        // FileInputStream fis = new FileInputStream(msg);
-        // BufferedInputStream bis = new BufferedInputStream(fis);
-        // DataInputStream dis = new DataInputStream(bis);
-        // dis.readFully(mybytearray, 0, mybytearray.length);
+        JFileChooser chooser = new JFileChooser();
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1), msg.substring(msg.lastIndexOf(".") + 1)));
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Save File To...");
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+          String filepath = 
+              chooser.getSelectedFile().toString();
+          
+          if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
+              filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
+          }
+
+          try {
+              FileInputStream fReader = new FileInputStream(msg.substring(msg.lastIndexOf(":") + 1));
+              FileOutputStream fWriter = new FileOutputStream(filepath);
+              byte[] b = new byte[1024 * 16];
+              int size;
+
+              while ((size = fReader.read(b)) > 0) {
+                  fWriter.write(b, 0, size);
+              }
+
+              fWriter.close();
+              fReader.close();
+
+              JOptionPane.showMessageDialog(null, "File was saved to " + chooser.getCurrentDirectory());
+          } catch (Exception err) {
+              err.printStackTrace();
+          }
+      }
 
         client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
         success = true;
