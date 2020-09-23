@@ -11,7 +11,6 @@ import javax.swing.event.*;
 import javax.swing.text.html.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
 import java.util.*;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -159,10 +158,6 @@ public class Client extends Thread {
                 try {
                     if (client_name_field.getText().equals("")) {
                         JOptionPane.showMessageDialog(panel, "Please enter a name!");
-                    } else if (client_ip_field.getText().equals("")) {
-                        JOptionPane.showMessageDialog(panel, "Please enter server name!");
-                    } else if (client_port_field.getText().equals("")) {
-                        JOptionPane.showMessageDialog(panel, "Please enter port number!");
                     } else {
                         // String portnumber = client_port_field.getText();
                         username = client_name_field.getText();
@@ -249,19 +244,16 @@ public class Client extends Thread {
             public void actionPerformed(ActionEvent ae) {
                 try {
                     JFileChooser file = new JFileChooser();
-                    file.addChoosableFileFilter(new ImageFilter());
-                    file.setAcceptAllFileFilterUsed(false);
                     int result = file.showOpenDialog(null);
                     int size;
                     if (result == JFileChooser.APPROVE_OPTION) {
 
                         File selectedFile = file.getSelectedFile();
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-                        output.println("sent a file:" + selectedFile.getName());
+                        output.println("(sent a file:" + selectedFile.getName() + ").");
 
                         // TESTING CODE
                         byte[] mybytearray = new byte[(int) selectedFile.length()];
-
                         FileInputStream fis = new FileInputStream(selectedFile);
 
                         String filepath = selectedFile.getName();
@@ -274,17 +266,20 @@ public class Client extends Thread {
 
                         fis.close();
                         fileCopy.close();
+                        // BufferedInputStream bis = new BufferedInputStream(fis);
+                        // DataInputStream dis = new DataInputStream(bis);
+                        // dis.readFully(mybytearray, 0, mybytearray.length);
 
                         // handle file send over socket
                         OutputStream os = server.getOutputStream();
 
                         // Sending file name and file size to the server
                         DataOutputStream dos = new DataOutputStream(os);
-                        // dos.writeUTF("(" + selectedFile.getName());
-                        dos.writeUTF("");
-
+                        dos.writeUTF("(" + selectedFile.getName());
+                        // dos.writeLong(mybytearray.length);
+                        // dos.write(mybytearray, 0, mybytearray.length);
+                        // dos.flush();
                         System.out.println("File " + selectedFile.getName() + " sent to client.");
-
                     } else {
                         System.out.println("No Selection");
                     }
@@ -375,49 +370,6 @@ public class Client extends Thread {
                     System.err.println(ex.getMessage());
                 }
             }
-        }
-    }
-
-    class ImageFilter extends FileFilter {
-        public final static String JPEG = "jpeg";
-        public final static String JPG = "jpg";
-        public final static String GIF = "gif";
-        public final static String TIFF = "tiff";
-        public final static String TIF = "tif";
-        public final static String PNG = "png";
-
-        @Override
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
-                return true;
-            }
-
-            String extension = getExtension(f);
-            if (extension != null) {
-                if (extension.equals(TIFF) || extension.equals(TIF) || extension.equals(GIF) || extension.equals(JPEG)
-                        || extension.equals(JPG) || extension.equals(PNG)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Image Only";
-        }
-
-        String getExtension(File f) {
-            String ext = null;
-            String s = f.getName();
-            int i = s.lastIndexOf('.');
-
-            if (i > 0 && i < s.length() - 1) {
-                ext = s.substring(i + 1).toLowerCase();
-            }
-            return ext;
         }
     }
 
