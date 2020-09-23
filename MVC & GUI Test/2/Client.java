@@ -251,7 +251,8 @@ public class Client extends Thread {
                         byte[] mybytearray = new byte[(int) selectedFile.length()];
                         FileInputStream fis = new FileInputStream(selectedFile);
                         
-                        String filepath = selectedFile.getAbsolutePath();
+                        String filepath = selectedFile.getName();
+                        System.out.println("filepath: " + filepath);
                         FileOutputStream fileCopy = new FileOutputStream(filepath);
                         
                         while ((size = fis.read(mybytearray)) > 0) {
@@ -269,7 +270,7 @@ public class Client extends Thread {
 
                         // Sending file name and file size to the server
                         DataOutputStream dos = new DataOutputStream(os);
-                        dos.writeUTF(selectedFile.getName());
+                        dos.writeUTF("("+selectedFile.getName());
                         // dos.writeLong(mybytearray.length);
                         // dos.write(mybytearray, 0, mybytearray.length);
                         // dos.flush();
@@ -377,6 +378,12 @@ public class Client extends Thread {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getFilename(String path){
+        File filepath = new File(path);
+        String filename = filepath.getName();
+        return filename.replace(" ","_");
     }
 
     public static void main(final String[] args) throws Exception {

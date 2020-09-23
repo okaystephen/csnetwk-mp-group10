@@ -227,15 +227,16 @@ public class Server {
         chooser.setAcceptAllFileFilterUsed(false);
 
         if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-          String filepath = 
-              chooser.getSelectedFile().toString();
+          String filepath = chooser.getSelectedFile().toString();
           
           if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
               filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
           }
 
           try {
+              System.out.println("to be read: " + msg.substring(msg.lastIndexOf(":") + 1));
               FileInputStream fReader = new FileInputStream(msg.substring(msg.lastIndexOf(":") + 1));
+              System.out.println("filepath server: " + filepath);
               FileOutputStream fWriter = new FileOutputStream(filepath);
               byte[] b = new byte[1024 * 16];
               int size;
@@ -317,8 +318,6 @@ class UserHandler implements Runnable {
       message = sc.nextLine();
 
       if (message.charAt(0) == '(') {
-        // user.changeColor(message);
-        // update color for all other users
         this.server.broadcastFile(message, user);
       } else {
         // update user list
