@@ -117,6 +117,7 @@ public class Server {
       // JFileChooser chooser = new JFileChooser();
       chooser.setCurrentDirectory(new java.io.File("."));
       chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      chooser.addChoosableFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
       // disable the "All files" option.
       chooser.setAcceptAllFileFilterUsed(false);
       //
