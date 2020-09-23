@@ -37,6 +37,7 @@ public class Server {
   private List<User> clients;
   private ServerSocket server;
   private static JFileChooser chooser = new JFileChooser();
+  private static JFileChooser files = new JFileChooser();
 
   public String console_log;
 
