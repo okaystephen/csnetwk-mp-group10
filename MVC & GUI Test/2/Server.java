@@ -283,21 +283,21 @@ public class Server {
 
           System.out.println("Hello world");
           // JFileChooser chooser = new JFileChooser();
-          chooser.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1),
+          files.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1),
               msg.substring(msg.lastIndexOf(".") + 1)));
-          chooser.setCurrentDirectory(new java.io.File("."));
-          chooser.setDialogTitle("Save File To...");
-          chooser.setAcceptAllFileFilterUsed(false);
+          files.setCurrentDirectory(new java.io.File("."));
+          files.setDialogTitle("Save File To...");
+          files.setAcceptAllFileFilterUsed(false);
           // int result = chooser.showSaveDialog(null);
           // int result = chooser.showOpenDialog(null);
 
           System.out.println("Hello world 2");
 
-          if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+          if (files.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 
             System.out.println("Hello world 3");
 
-            String filepath = chooser.getSelectedFile().toString();
+            String filepath = files.getSelectedFile().toString();
 
             if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
               filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
@@ -317,7 +317,7 @@ public class Server {
               fWriter.close();
               fReader.close();
 
-              JOptionPane.showMessageDialog(null, "File was saved to " + chooser.getCurrentDirectory());
+              JOptionPane.showMessageDialog(null, "File was saved to " + files.getCurrentDirectory());
               client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
             } catch (Exception err) {
               err.printStackTrace();

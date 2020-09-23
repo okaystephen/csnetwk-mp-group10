@@ -95,7 +95,7 @@ public class Client extends Thread {
         client_active.setContentType("text/html");
         client_active.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
-        // FOR TESTING
+        // FOR TESTING ------------------------------------------ do not forget to erase -------------------------------------------------------------
         client_ip_field.setText("localhost");
         client_port_field.setText("12345");
 
