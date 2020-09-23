@@ -11,6 +11,7 @@ import javax.swing.event.*;
 import javax.swing.text.html.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.util.*;
 import java.util.Arrays;
 import java.util.ArrayList;
 
@@ -240,15 +241,44 @@ public class Client extends Thread {
                 try {
                     JFileChooser file = new JFileChooser();
                     int result = file.showOpenDialog(null);
-
+                    int size;
                     if (result == JFileChooser.APPROVE_OPTION) {
 
                         File selectedFile = file.getSelectedFile();
                         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-                        output.println("(sent a file: " + selectedFile.getName() + ")");
+                        output.println("(sent a file:" + selectedFile.getName());
 
+                        // TESTING CODE
+                        byte[] mybytearray = new byte[(int) selectedFile.length()];
+                        FileInputStream fis = new FileInputStream(selectedFile);
+
+                        String filepath = selectedFile.getName();
+                        System.out.println("filepath: " + filepath);
+                        FileOutputStream fileCopy = new FileOutputStream(filepath);
+
+                        while ((size = fis.read(mybytearray)) > 0) {
+                            fileCopy.write(mybytearray, 0, size);
+                        }
+
+                        fis.close();
+                        fileCopy.close();
+                        // BufferedInputStream bis = new BufferedInputStream(fis);
+                        // DataInputStream dis = new DataInputStream(bis);
+                        // dis.readFully(mybytearray, 0, mybytearray.length);
+
+                        // handle file send over socket
+                        OutputStream os = server.getOutputStream();
+
+                        // Sending file name and file size to the server
+                        DataOutputStream dos = new DataOutputStream(os);
+                        dos.writeUTF("(" + selectedFile.getName());
+                        // dos.writeLong(mybytearray.length);
+                        // dos.write(mybytearray, 0, mybytearray.length);
+                        // dos.flush();
+                        System.out.println("File " + selectedFile.getName() + " sent to client.");
+                    } else {
+                        System.out.println("No Selection");
                     }
-
                 } catch (final Exception e) {
                     JOptionPane.showMessageDialog(panel, e.getMessage());
                 }
@@ -348,6 +378,12 @@ public class Client extends Thread {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getFilename(String path) {
+        File filepath = new File(path);
+        String filename = filepath.getName();
+        return filename.replace(" ", "_");
     }
 
     public static void main(final String[] args) throws Exception {
