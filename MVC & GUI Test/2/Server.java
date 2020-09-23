@@ -37,6 +37,7 @@ public class Server {
   private List<User> clients;
   private ServerSocket server;
   private static JFileChooser chooser = new JFileChooser();
+  private static JFileChooser files = new JFileChooser();
 
   public String console_log;
 
@@ -85,19 +86,19 @@ public class Server {
           String log = client_chatlog.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 
           // JFileChooser chooser = new JFileChooser();
-          chooser.setCurrentDirectory(new java.io.File("."));
-          chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+          files.setCurrentDirectory(new java.io.File("."));
+          files.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
           // disable the "All files" option.
-          chooser.setAcceptAllFileFilterUsed(false);
+          files.setAcceptAllFileFilterUsed(false);
           //
-          if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
-            System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+          if (files.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            System.out.println("getCurrentDirectory(): " + files.getCurrentDirectory());
+            System.out.println("getSelectedFile() : " + files.getSelectedFile());
 
-            File logfile = new File(chooser.getSelectedFile() + "/chatlog.txt");
+            File logfile = new File(files.getSelectedFile() + "/chatlog.txt");
             if (logfile.createNewFile()) {
               System.out.println("File created: " + logfile.getName());
-              FileWriter myWriter = new FileWriter(chooser.getSelectedFile() + "/chatlog.txt");
+              FileWriter myWriter = new FileWriter(files.getSelectedFile() + "/chatlog.txt");
               myWriter.write(log);
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
