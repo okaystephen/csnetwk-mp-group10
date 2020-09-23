@@ -81,25 +81,25 @@ public class Server {
     this.port = port;
     this.clients = new ArrayList<User>();
 
-    frame.addWindowListener(new WindowAdapter(){
-        @Override
-        public void windowClosing(WindowEvent e)
-        {
-          if (client_counter == 2){
-            JOptionPane.showMessageDialog(panel, "Two clients are still connected! Cannot close the server.");
-            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-          }
-          else{
-            int save = JOptionPane.showConfirmDialog(null,"Do you want to save the logs?", "Save Logs", JOptionPane.YES_NO_OPTION);
-            if (save == JOptionPane.YES_OPTION) {
-              save_log();
-              e.getWindow().dispose();
-            }
-            else{
-              e.getWindow().dispose();
-            }
+    frame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent e) {
+        if (client_counter == 2) {
+          JOptionPane.showMessageDialog(panel, "Two clients are still connected! Cannot close the server.");
+          frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        } else {
+          int save = JOptionPane.showConfirmDialog(null, "Do you want to save the logs?", "Save Logs",
+              JOptionPane.YES_NO_OPTION);
+          if (save == JOptionPane.YES_OPTION) {
+            save_log();
+            e.getWindow().dispose();
+            System.exit(0);
+          } else {
+            e.getWindow().dispose();
+            System.exit(0);
           }
         }
+      }
     });
 
     // Save log button
@@ -294,7 +294,7 @@ public class Server {
 
           System.out.println("Hello world 2");
 
-          if (files.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+          if (files.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
             System.out.println("Hello world 3");
 

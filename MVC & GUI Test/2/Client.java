@@ -95,7 +95,8 @@ public class Client extends Thread {
         client_active.setContentType("text/html");
         client_active.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
-        // FOR TESTING ------------------------------------------ do not forget to erase -------------------------------------------------------------
+        // FOR TESTING ------------------------------------------ do not forget to erase
+        // -------------------------------------------------------------
         client_ip_field.setText("localhost");
         client_port_field.setText("12345");
 
@@ -365,7 +366,11 @@ public class Client extends Thread {
                             ArrayList<String> userArray = new ArrayList<String>(Arrays.asList(message.split(", ")));
                             client_active.setText(null);
                             for (String user : userArray) {
-                                appendPane(client_active, user);
+                                if (user.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "").equals(username)) {
+                                    appendPane(client_active, user + " (You)");
+                                } else {
+                                    appendPane(client_active, user);
+                                }
                             }
                         } else {
                             appendPane(client_chatlog, message);
