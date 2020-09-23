@@ -36,6 +36,7 @@ public class Server {
   private int port;
   private List<User> clients;
   private ServerSocket server;
+  private static JFileChooser chooser = new JFileChooser();
 
   public String console_log;
 
@@ -83,7 +84,7 @@ public class Server {
         try {
           String log = client_chatlog.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 
-          JFileChooser chooser = new JFileChooser();
+          // JFileChooser chooser = new JFileChooser();
           chooser.setCurrentDirectory(new java.io.File("."));
           chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
           // disable the "All files" option.
@@ -218,29 +219,54 @@ public class Server {
   public void broadcastFile(String msg, User userSender) {
     boolean success = false;
     String receiver = "";
+
     for (User client : this.clients) {
+
       if (this.clients.size() == 2) {
 
-        // 0 = yes, 1 = no
+        System.out.println(client);
+        System.out.println(userSender);
+        System.out.println(this.clients);
+
+        String clientString = client.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+        String userString = userSender.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+
+        System.out.println(clientString);
+        System.out.println(userString);
+
+        if (clientString.equals(userString)) {
+          System.out.println("equals!!");
+          continue;
+        }
+
         int reply = JOptionPane.showConfirmDialog(null,
             userSender.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ")
-                + " sent a file, would you like to save it?",
+                + "sent a file, would you like to save it?",
             "Receive File Permission", JOptionPane.YES_NO_OPTION);
 
         if (reply == JOptionPane.YES_OPTION) {
-          JFileChooser chooser = new JFileChooser();
-          chooser.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1)));
+
+          System.out.println("Hello world");
+          // JFileChooser chooser = new JFileChooser();
+          chooser.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1),
+              msg.substring(msg.lastIndexOf(".") + 1)));
           chooser.setCurrentDirectory(new java.io.File("."));
           chooser.setDialogTitle("Save File To...");
           chooser.setAcceptAllFileFilterUsed(false);
+          // int result = chooser.showSaveDialog(null);
+          // int result = chooser.showOpenDialog(null);
+
+          System.out.println("Hello world 2");
 
           if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+
+            System.out.println("Hello world 3");
+
             String filepath = chooser.getSelectedFile().toString();
 
             if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
               filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
             }
-
             try {
               System.out.println("to be read: " + msg.substring(msg.lastIndexOf(":") + 1));
               FileInputStream fReader = new FileInputStream(msg.substring(msg.lastIndexOf(":") + 1));
@@ -257,21 +283,21 @@ public class Server {
               fReader.close();
 
               JOptionPane.showMessageDialog(null, "File was saved to " + chooser.getCurrentDirectory());
-
+              client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
             } catch (Exception err) {
               err.printStackTrace();
             }
           }
 
-          client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
-
           if (client != userSender) {
             receiver = client.getNickname();
             success = true;
+          } else {
+            success = true;
           }
+
         } else {
           JOptionPane.showMessageDialog(null, "Receiving file cancelled!");
-          break;
         }
 
       } else {
@@ -335,7 +361,8 @@ class UserHandler implements Runnable {
     while (sc.hasNextLine()) {
       message = sc.nextLine();
 
-      if (message.charAt(0) == '(') {
+      // if (message.charAt(0) == '(')
+      if (message.contains("sent a file:")) {
         this.server.broadcastFile(message, user);
       } else {
         // broadcast messages
