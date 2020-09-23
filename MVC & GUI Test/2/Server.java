@@ -78,41 +78,64 @@ public class Server {
     this.port = port;
     this.clients = new ArrayList<User>();
 
+    frame.addWindowListener(new WindowAdapter(){
+        @Override
+        public void windowClosing(WindowEvent e)
+        {
+          int save = JOptionPane.showConfirmDialog(null,"Do you want to save the logs?", "Save Logs", JOptionPane.YES_NO_OPTION);
+          if (save == JOptionPane.YES_OPTION) {
+            save_log();
+            e.getWindow().dispose();
+          }
+          else{
+            e.getWindow().dispose();
+          }
+        }
+    });
+
     // Save log button
     server_savelog_button.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
-        try {
-          String log = client_chatlog.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
-
-          // JFileChooser chooser = new JFileChooser();
-          chooser.setCurrentDirectory(new java.io.File("."));
-          chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-          // disable the "All files" option.
-          chooser.setAcceptAllFileFilterUsed(false);
-          //
-          if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
-            System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
-
-            File logfile = new File(chooser.getSelectedFile() + "/chatlog.txt");
-            if (logfile.createNewFile()) {
-              System.out.println("File created: " + logfile.getName());
-              FileWriter myWriter = new FileWriter(chooser.getSelectedFile() + "/chatlog.txt");
-              myWriter.write(log);
-              myWriter.close();
-              System.out.println("Successfully wrote to the file.");
-              JOptionPane.showMessageDialog(panel, "Chatlog text file saved!");
-            } else {
-              System.out.println("File already exists.");
-            }
-          } else {
-            System.out.println("No Selection ");
-          }
-        } catch (final Exception e) {
-          JOptionPane.showMessageDialog(panel, e.getMessage());
-        }
+        save_log();
       }
     });
+  }
+
+  public void save_log() {
+    try {
+      String log = client_chatlog.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
+
+      // JFileChooser chooser = new JFileChooser();
+      chooser.setCurrentDirectory(new java.io.File("."));
+      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      // disable the "All files" option.
+      chooser.setAcceptAllFileFilterUsed(false);
+      //
+      if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+        System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+
+        File logfile = new File(chooser.getSelectedFile() + "/chatlog" + formatter.format(ts) + ".txt");
+        if (logfile.createNewFile()) {
+          System.out.println("File created: " + logfile.getName());
+          FileWriter myWriter = new FileWriter(chooser.getSelectedFile() + "/chatlog" + formatter.format(ts) + ".txt");
+          myWriter.write(log);
+          myWriter.close();
+          System.out.println("Successfully wrote to the file.");
+          JOptionPane.showMessageDialog(panel, "Chatlog text file saved!");
+        } else {
+          System.out.println("File already exists.");
+        }
+      } else {
+        System.out.println("No Selection ");
+      }
+    } catch (final Exception e) {
+      JOptionPane.showMessageDialog(panel, e.getMessage());
+    }
   }
 
   public void run() throws IOException {
