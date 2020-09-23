@@ -41,6 +41,8 @@ public class Server {
 
   public String console_log;
 
+  public int client_counter;
+
   public static void main(String[] args) throws IOException {
     new Server(12345).run();
   }
@@ -48,7 +50,7 @@ public class Server {
   public Server(int port) {
     frame = new JFrame("De La Salle Usap Server");
     panel = new JPanel();
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     client_chatlog = new JTextPane();
     client_chatlog.setEditable(false);
@@ -83,13 +85,19 @@ public class Server {
         @Override
         public void windowClosing(WindowEvent e)
         {
-          int save = JOptionPane.showConfirmDialog(null,"Do you want to save the logs?", "Save Logs", JOptionPane.YES_NO_OPTION);
-          if (save == JOptionPane.YES_OPTION) {
-            save_log();
-            e.getWindow().dispose();
+          if (client_counter == 2){
+            JOptionPane.showMessageDialog(panel, "Two clients are still connected! Cannot close the server.");
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
           }
           else{
-            e.getWindow().dispose();
+            int save = JOptionPane.showConfirmDialog(null,"Do you want to save the logs?", "Save Logs", JOptionPane.YES_NO_OPTION);
+            if (save == JOptionPane.YES_OPTION) {
+              save_log();
+              e.getWindow().dispose();
+            }
+            else{
+              e.getWindow().dispose();
+            }
           }
         }
     });
@@ -188,6 +196,8 @@ public class Server {
 
       // create a new thread for newUser incoming messages handling
       new Thread(new UserHandler(this, newUser)).start();
+
+      client_counter++;
     }
   }
 
@@ -206,6 +216,7 @@ public class Server {
         clients.getOutStream().println(user.toString() + " <b>has logged out.</b>");
       }
     }
+    client_counter--;
   }
 
   // send incoming messages to all users
