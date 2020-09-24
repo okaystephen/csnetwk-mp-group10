@@ -295,6 +295,10 @@ public class Server {
         try {
           boolean success = false;
           String receiver = "";
+          String filepath = "";
+          String extension = "." + msg.substring(msg.lastIndexOf(".") + 1);
+          JFileChooser files = new JFileChooser();
+
           fileframe.dispose();
 
           for (User client : clients) {
@@ -306,7 +310,6 @@ public class Server {
                 continue;
               }
 
-              JFileChooser files = new JFileChooser();
               files.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1),
                   msg.substring(msg.lastIndexOf(".") + 1)));
               files.setCurrentDirectory(new java.io.File("."));
@@ -316,7 +319,7 @@ public class Server {
               int result = files.showSaveDialog(null);
 
               if (result == JFileChooser.APPROVE_OPTION) {
-                String filepath = files.getSelectedFile().toString();
+                filepath = files.getSelectedFile().toString();
 
                 if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
                   filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
@@ -336,6 +339,8 @@ public class Server {
 
                   JOptionPane.showMessageDialog(null, "File was saved to " + files.getCurrentDirectory());
                   client.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+                  userSender.getOutStream().println(userSender.toString() + "<span>: " + msg + "</span>");
+
                 } catch (Exception err) {
                   err.printStackTrace();
                 }
@@ -357,13 +362,24 @@ public class Server {
             }
 
             if (success) {
+              client.getOutStream().println(client.toString() + "<span>: received a file:"
+                  + files.getSelectedFile().getName() + extension + "</span>");
+              userSender.getOutStream().println(client.toString() + "<span>: received a file:"
+                  + files.getSelectedFile().getName() + extension + "</span>");
+
               Date date = new Date();
               Timestamp ts = new Timestamp(date.getTime());
               SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
               console_log = "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a file to "
-                  + receiver + ": ";
+                  + receiver;
               System.out.println(console_log);
+
+              String console_log_receive = "\n" + formatter.format(ts) + ": " + receiver + " received a file from "
+                  + userSender.getNickname();
+              System.out.println(console_log);
+
               appendPane(client_chatlog, console_log);
+              appendPane(client_chatlog, console_log_receive);
             }
           }
         } catch (final Exception e) {
