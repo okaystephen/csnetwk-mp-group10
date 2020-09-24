@@ -98,7 +98,7 @@ public class Client extends Thread {
         // FOR TESTING ------------------------------------------ do not forget to erase
         // -------------------------------------------------------------
         client_ip_field.setText("localhost");
-        client_port_field.setText("12345");
+        client_port_field.setText("9000");
 
         appendPane(client_chatlog, "<br><br>" + "<h3>Welcome to De La Salle Usap!</h3>" + "<br>"
                 + "Enter your name, IP Address, and Port Number" + "<br>" + "to get started!");
@@ -281,8 +281,8 @@ public class Client extends Thread {
 
                         // Sending file name and file size to the server
                         DataOutputStream dos = new DataOutputStream(os);
-                        // dos.writeUTF("(" + selectedFile.getName());
-                        dos.writeUTF("");
+                        dos.writeUTF("sent a file:" + selectedFile.getName());
+                        // dos.writeUTF("");
 
                         System.out.println("File " + selectedFile.getName() + " sent to client.");
 

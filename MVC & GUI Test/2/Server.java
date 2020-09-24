@@ -44,7 +44,7 @@ public class Server {
   public int client_counter;
 
   public static void main(String[] args) throws IOException {
-    new Server(12345).run();
+    new Server(9000).run();
   }
 
   public Server(int port) {
@@ -90,6 +90,12 @@ public class Server {
         } else {
           int save = JOptionPane.showConfirmDialog(null, "Do you want to save the logs?", "Save Logs",
               JOptionPane.YES_NO_OPTION);
+          Date closeserverdate = new Date();
+          Timestamp closeserverts = new Timestamp(closeserverdate.getTime());
+          SimpleDateFormat closeserverformatter = new SimpleDateFormat("HH:mm:ss");
+          console_log = "\n" + closeserverformatter.format(closeserverts) + ": " + "Closing server...";
+          System.out.println(console_log);
+          appendPane(client_chatlog, console_log);
           if (save == JOptionPane.YES_OPTION) {
             save_log();
             e.getWindow().dispose();
@@ -122,9 +128,6 @@ public class Server {
       chooser.setAcceptAllFileFilterUsed(false);
       //
       if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-        System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
-        System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
-
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
@@ -157,7 +160,7 @@ public class Server {
     Date date = new Date();
     Timestamp ts = new Timestamp(date.getTime());
     SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-    console_log = "\n" + formatter.format(ts) + ": " + "Listening at Port 12345";
+    console_log = "\n" + formatter.format(ts) + ": " + "Listening at Port 9000";
     System.out.println(console_log);
     appendPane(client_chatlog, console_log);
 
@@ -248,6 +251,11 @@ public class Server {
       console_log = "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to " + receiver;
       System.out.println(console_log);
       appendPane(client_chatlog, console_log);
+
+      String console_log_message = "\n" + formatter.format(ts) + ": " + userSender.getNickname() + " sent a message to "
+          + receiver + ": " + msg.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+      System.out.println(console_log_message);
+      appendPane(client_chatlog, console_log_message);
     }
   }
 
@@ -260,18 +268,10 @@ public class Server {
 
       if (this.clients.size() == 2) {
 
-        System.out.println(client);
-        System.out.println(userSender);
-        System.out.println(this.clients);
-
         String clientString = client.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
         String userString = userSender.toString().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
 
-        System.out.println(clientString);
-        System.out.println(userString);
-
         if (clientString.equals(userString)) {
-          System.out.println("equals!!");
           continue;
         }
 
@@ -282,7 +282,6 @@ public class Server {
 
         if (reply == JOptionPane.YES_OPTION) {
 
-          System.out.println("Hello world");
           // JFileChooser chooser = new JFileChooser();
           files.addChoosableFileFilter(new FileNameExtensionFilter("." + msg.substring(msg.lastIndexOf(".") + 1),
               msg.substring(msg.lastIndexOf(".") + 1)));
@@ -292,21 +291,15 @@ public class Server {
           // int result = chooser.showSaveDialog(null);
           // int result = chooser.showOpenDialog(null);
 
-          System.out.println("Hello world 2");
-
           if (files.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-
-            System.out.println("Hello world 3");
-
             String filepath = files.getSelectedFile().toString();
 
             if (!filepath.endsWith("." + msg.substring(msg.lastIndexOf(".") + 1))) {
               filepath += "." + msg.substring(msg.lastIndexOf(".") + 1);
             }
             try {
-              System.out.println("to be read: " + msg.substring(msg.lastIndexOf(":") + 1));
+
               FileInputStream fReader = new FileInputStream(msg.substring(msg.lastIndexOf(":") + 1));
-              System.out.println("filepath server: " + filepath);
               FileOutputStream fWriter = new FileOutputStream(filepath);
               byte[] b = new byte[1024 * 16];
               int size;
@@ -328,8 +321,6 @@ public class Server {
           if (client != userSender) {
             receiver = client.getNickname();
             success = true;
-          } else {
-            success = true;
           }
 
         } else {
@@ -348,8 +339,6 @@ public class Server {
 
     }
     if (success) {
-      System.out.println("Hello I'm in success");
-
       Date date = new Date();
       Timestamp ts = new Timestamp(date.getTime());
       SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
@@ -397,7 +386,6 @@ class UserHandler implements Runnable {
     while (sc.hasNextLine()) {
       message = sc.nextLine();
 
-      // if (message.charAt(0) == '(')
       if (message.contains("sent a file:")) {
         this.server.broadcastFile(message, user);
       } else {
