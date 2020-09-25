@@ -13,4 +13,3 @@ Instructions:
 7. A client could only send a message or file when another client is connected.
 8. To save the chatlog, click the "Save Log" button on the Server GUI window.
 9. There will also be a prompt to save the chatlog when exiting the Server GUI window.
-10. In saving a chatlog, you need to select a folder in order to save the .txt file.

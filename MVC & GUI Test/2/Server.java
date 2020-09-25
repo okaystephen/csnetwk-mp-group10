@@ -125,27 +125,19 @@ public class Server {
     try {
       String log = client_chatlog.getText().replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ");
 
-      // chooser.setCurrentDirectory(new java.io.File("."));
       chooser.setDialogTitle("Save Chatlog To...");
-      // chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       chooser.addChoosableFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
 
       // disable the "All files" option.
       chooser.setAcceptAllFileFilterUsed(false);
-      //
       if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
         Date date = new Date();
         Timestamp ts = new Timestamp(date.getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
-        // File logfile = new File(chooser.getSelectedFile() + "/chatlog" +
-        // formatter.format(ts) + ".txt");
-        // File logfile = chooser.getSelectedFile();
         File logfile = new File(chooser.getSelectedFile() + "-" + formatter.format(ts) + ".txt");
 
         System.out.println("File created: " + logfile.getName());
-        // FileWriter myWriter = new FileWriter(chooser.getSelectedFile() + "/chatlog" +
-        // formatter.format(ts) + ".txt");
         FileWriter myWriter = new FileWriter(chooser.getSelectedFile() + "-" + formatter.format(ts) + ".txt");
         myWriter.write(log);
         myWriter.close();
