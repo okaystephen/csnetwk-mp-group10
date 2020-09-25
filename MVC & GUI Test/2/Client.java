@@ -147,6 +147,7 @@ public class Client extends Thread {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
 
         // On connect
         client_proceed_button.addActionListener(new ActionListener() {
